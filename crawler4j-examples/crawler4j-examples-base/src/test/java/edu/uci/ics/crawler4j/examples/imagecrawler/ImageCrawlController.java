@@ -25,6 +25,7 @@ import java.util.List;
 import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.frontier.SleepycatFrontierConfiguration;
@@ -35,11 +36,13 @@ import edu.uci.ics.crawler4j.url.SleepycatWebURLFactory;
 public class ImageCrawlController {
 
     public static void main(String[] args) throws Exception {
+        File storageDir = Files.createTmpDir("crawler4j");
+
         CrawlConfig config = new CrawlConfig();
 
         // Set the folder where intermediate crawl data is stored (e.g. list of urls that are extracted from previously
         // fetched pages and need to be crawled later).
-        config.setCrawlStorageFolder("/tmp/crawler4j/");
+        config.setCrawlStorageFolder(storageDir);
 
         // Number of threads to use during crawling. Increasing this typically makes crawling faster. But crawling
         // speed depends on many other factors as well. You can experiment with this to figure out what number of
@@ -47,7 +50,7 @@ public class ImageCrawlController {
         int numberOfCrawlers = 8;
 
         // Where should the downloaded images be stored?
-        File storageFolder = new File("/tmp/crawled-images/");
+        File storageFolder = storageDir;
 
         // Since images are binary content, we need to set this parameter to
         // true to make sure they are included in the crawl.
@@ -65,12 +68,7 @@ public class ImageCrawlController {
             controller.addSeed(domain);
         }
 
-        if (!storageFolder.exists()) {
-            storageFolder.mkdirs();
-        }
-
         CrawlController.WebCrawlerFactory<ImageCrawler> factory = () -> new ImageCrawler(storageFolder, crawlDomains);
         controller.start(factory, numberOfCrawlers);
     }
-
 }

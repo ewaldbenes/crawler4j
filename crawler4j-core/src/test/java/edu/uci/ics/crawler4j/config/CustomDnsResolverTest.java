@@ -46,7 +46,7 @@ import org.junit.jupiter.api.io.TempDir;
 class CustomDnsResolverTest {
 
 	@TempDir
-  public File crawlStorageFolder;
+    public File crawlStorageFolder;
 
     @RegisterExtension
     static WireMockExtension wm = WireMockExtension.newInstance()
@@ -70,7 +70,7 @@ class CustomDnsResolverTest {
                 , InetAddress.getByName("127.0.0.1"));
 
         CrawlConfig config = new CrawlConfig();
-        config.setCrawlStorageFolder(crawlStorageFolder.getAbsolutePath());
+        config.setCrawlStorageFolder(crawlStorageFolder);
         config.setMaxPagesToFetch(10);
         config.setPolitenessDelay(1000);
         config.setDnsResolver(inMemDnsResolver);

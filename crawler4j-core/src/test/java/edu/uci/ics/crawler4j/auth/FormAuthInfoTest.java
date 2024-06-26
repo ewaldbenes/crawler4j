@@ -90,7 +90,7 @@ class FormAuthInfoTest {
               );
 
         CrawlConfig c = new CrawlConfig();
-        c.setCrawlStorageFolder(crawlStorageFolder.getAbsolutePath());
+        c.setCrawlStorageFolder(crawlStorageFolder);
         c.setMaxPagesToFetch(10);
         c.setPolitenessDelay(150);
         FormAuthInfo formAuthInfo = new FormAuthInfo(

@@ -99,15 +99,10 @@ public class CrawlController {
         config.validate();
         this.config = config;
 
-        File folder = new File(config.getCrawlStorageFolder());
-        if (!folder.exists()) {
-            if (folder.mkdirs()) {
-                logger.debug("Created folder: " + folder.getAbsolutePath());
-            } else {
-                throw new Exception(
-                        "couldn't create the storage folder: " + folder.getAbsolutePath() +
-                                " does it already exist ?");
-            }
+        File folder = config.getCrawlStorageFolder();
+        if (!folder.exists() || !folder.isDirectory()) {
+            throw new Exception(
+                    folder.getAbsolutePath() + " as the storage directory does not exist or is no directory. Create it!");
         }
 
         this.tldList = tldList == null ? new TLDList(config) : tldList;

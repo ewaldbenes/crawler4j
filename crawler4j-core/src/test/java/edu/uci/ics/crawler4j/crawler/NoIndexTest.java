@@ -44,7 +44,7 @@ import org.junit.jupiter.api.io.TempDir;
 class NoIndexTest {
 
     @TempDir
-  public File crawlStorageFolder;
+    public File crawlStorageFolder;
 
     @RegisterExtension
     static WireMockExtension wm = WireMockExtension.newInstance()
@@ -83,7 +83,7 @@ class NoIndexTest {
 
         // when:
         CrawlConfig config = new CrawlConfig();
-        config.setCrawlStorageFolder(crawlStorageFolder.getAbsolutePath());
+        config.setCrawlStorageFolder(crawlStorageFolder);
         config.setPolitenessDelay(100);
         config.setMaxConnectionsPerHost(1);
         config.setThreadShutdownDelaySeconds(1);

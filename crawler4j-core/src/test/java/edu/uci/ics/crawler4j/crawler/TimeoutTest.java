@@ -42,7 +42,7 @@ import org.junit.jupiter.api.io.TempDir;
 class TimeoutTest {
 
     @TempDir
-  public File crawlStorageFolder;
+  	public File crawlStorageFolder;
 
     @RegisterExtension
     static WireMockExtension wm = WireMockExtension.newInstance()
@@ -70,7 +70,7 @@ class TimeoutTest {
 
         // when:
     	CrawlConfig config = new CrawlConfig();
-			config.setCrawlStorageFolder(crawlStorageFolder.getAbsolutePath());
+			config.setCrawlStorageFolder(crawlStorageFolder);
 			config.setPolitenessDelay(100);
 			config.setMaxConnectionsPerHost(1);
 			config.setThreadShutdownDelaySeconds(1);
@@ -116,7 +116,7 @@ class TimeoutTest {
 
         // when:
 				CrawlConfig config = new CrawlConfig();
-				config.setCrawlStorageFolder(crawlStorageFolder.getAbsolutePath());
+				config.setCrawlStorageFolder(crawlStorageFolder);
 				config.setPolitenessDelay(100);
 				config.setMaxConnectionsPerHost(1);
 				config.setThreadShutdownDelaySeconds(1);

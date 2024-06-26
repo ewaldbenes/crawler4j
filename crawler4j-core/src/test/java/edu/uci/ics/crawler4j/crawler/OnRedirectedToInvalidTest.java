@@ -43,7 +43,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class OnRedirectedToInvalidTest {
 
     @TempDir
-  public File crawlStorageFolder;
+    public File crawlStorageFolder;
 
     @RegisterExtension
     static WireMockExtension wm = WireMockExtension.newInstance()
@@ -76,7 +76,7 @@ class OnRedirectedToInvalidTest {
 
         // and:
     		CrawlConfig config = new CrawlConfig();
-        config.setCrawlStorageFolder(crawlStorageFolder.getAbsolutePath());
+        config.setCrawlStorageFolder(crawlStorageFolder);
         config.setPolitenessDelay(100);
         config.setMaxConnectionsPerHost(1);
         config.setThreadShutdownDelaySeconds(1);

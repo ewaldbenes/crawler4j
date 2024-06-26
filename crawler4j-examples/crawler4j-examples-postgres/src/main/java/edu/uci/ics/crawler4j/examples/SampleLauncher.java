@@ -34,13 +34,14 @@ import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 
 public class SampleLauncher {
 
     public static void main(String[] args) throws Exception {
-
-        String crawlStorageFolder = Files.createTempDirectory("crawler4j-").toAbsolutePath().toString();
+        File storageDir = createTmpDir("crawler4j");
 
         final int numberOfCrawlers = Integer.parseInt(args[2]);
 
@@ -48,7 +49,7 @@ public class SampleLauncher {
 
         config.setPolitenessDelay(100);
 
-        config.setCrawlStorageFolder(crawlStorageFolder);
+        config.setCrawlStorageFolder(storageDir);
 
         config.setMaxPagesToFetch(Integer.parseInt(args[0]));
 
@@ -95,4 +96,10 @@ public class SampleLauncher {
         pool.close();
     }
 
+    private static File createTmpDir(String path) throws IOException {
+        File dir = File.createTempFile(path, "");
+        dir.delete();
+        dir.mkdir();
+        return dir;
+    }
 }

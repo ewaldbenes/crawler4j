@@ -19,9 +19,11 @@
  */
 package edu.uci.ics.crawler4j.examples.localdata;
 
+import java.io.File;
 import java.util.List;
 
 import crawlercommons.filters.basic.BasicURLNormalizer;
+import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.frontier.SleepycatFrontierConfiguration;
 import edu.uci.ics.crawler4j.url.SleepycatWebURLFactory;
@@ -47,10 +49,11 @@ public class LocalDataCollectorController {
         }
 
         String rootFolder = args[0];
+        File storageDir = Files.createTmpDir(rootFolder);
         int numberOfCrawlers = Integer.parseInt(args[1]);
 
         CrawlConfig config = new CrawlConfig();
-        config.setCrawlStorageFolder(rootFolder);
+        config.setCrawlStorageFolder(storageDir);
         config.setMaxPagesToFetch(10);
         config.setPolitenessDelay(1000);
 

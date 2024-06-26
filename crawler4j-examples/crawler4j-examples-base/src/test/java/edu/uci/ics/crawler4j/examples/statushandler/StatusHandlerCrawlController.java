@@ -20,6 +20,7 @@
 package edu.uci.ics.crawler4j.examples.statushandler;
 
 import crawlercommons.filters.basic.BasicURLNormalizer;
+import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.frontier.SleepycatFrontierConfiguration;
 import edu.uci.ics.crawler4j.url.SleepycatWebURLFactory;
@@ -31,6 +32,8 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+
+import java.io.File;
 
 /**
  * @author Yasser Ganjisaffar
@@ -52,6 +55,7 @@ public class StatusHandlerCrawlController {
      * stored.
      */
         String crawlStorageFolder = args[0];
+        File storageDir = Files.createTmpDir(crawlStorageFolder);
 
     /*
      * numberOfCrawlers shows the number of concurrent threads that should
@@ -61,7 +65,7 @@ public class StatusHandlerCrawlController {
 
         CrawlConfig config = new CrawlConfig();
 
-        config.setCrawlStorageFolder(crawlStorageFolder);
+        config.setCrawlStorageFolder(storageDir);
 
     /*
      * Be polite: Make sure that we don't send more than 1 request per

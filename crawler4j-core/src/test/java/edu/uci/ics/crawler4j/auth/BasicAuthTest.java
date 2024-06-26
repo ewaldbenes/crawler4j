@@ -51,7 +51,7 @@ import org.junit.jupiter.api.io.TempDir;
 class BasicAuthTest {
 
 	@TempDir
-  public File crawlStorageFolder;
+    public File crawlStorageFolder;
 
     @RegisterExtension
     static WireMockExtension wm = WireMockExtension.newInstance()
@@ -103,7 +103,7 @@ class BasicAuthTest {
 
 
         CrawlConfig config = new CrawlConfig();
-        config.setCrawlStorageFolder(crawlStorageFolder.getAbsolutePath());
+        config.setCrawlStorageFolder(crawlStorageFolder);
         config.setMaxPagesToFetch(10);
         config.setPolitenessDelay(500);
         BasicAuthInfo basicAuthInfo = new BasicAuthInfo(

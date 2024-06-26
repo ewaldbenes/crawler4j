@@ -48,7 +48,7 @@ public class SleepycatFrontierConfiguration implements FrontierConfiguration {
         envConfig.setLocking(config.isResumableCrawling());
         envConfig.setLockTimeout(dbLockTimeout, TimeUnit.MILLISECONDS);
 
-        File envHome = new File(config.getCrawlStorageFolder() + File.separator + "frontier");
+        File envHome = new File(config.getCrawlStorageFolder(), "frontier");
         if (!envHome.exists()) {
             try {
                 Files.createDirectory(envHome.toPath());

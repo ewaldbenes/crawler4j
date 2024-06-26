@@ -42,7 +42,7 @@ import org.junit.jupiter.api.io.TempDir;
 class WebCrawlerTest {
 
     @TempDir
-  public File crawlStorageFolder;
+    public File crawlStorageFolder;
 
     @RegisterExtension
     static WireMockExtension wm = WireMockExtension.newInstance()
@@ -90,7 +90,7 @@ class WebCrawlerTest {
 
         // when:
     	CrawlConfig config = new CrawlConfig();
-      config.setCrawlStorageFolder(crawlStorageFolder.getAbsolutePath());
+      config.setCrawlStorageFolder(crawlStorageFolder);
       config.setPolitenessDelay(100);
       config.setMaxConnectionsPerHost(1);
       config.setThreadShutdownDelaySeconds(1);

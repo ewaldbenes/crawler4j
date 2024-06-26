@@ -23,20 +23,24 @@ import crawlercommons.filters.basic.BasicURLNormalizer;
 import de.hshn.mi.crawler4j.frontier.URLFrontierConfiguration;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
+import java.io.File;
+
 // https://stackoverflow.com/questions/57885828/netty-cannot-access-class-jdk-internal-misc-unsafe
 public class URLFrontierBasicCrawlController {
 
     public static void main(String[] args) throws Exception {
+        File storageDir = Files.createTmpDir("crawler4j");
         CrawlConfig config = new CrawlConfig();
 
         // Set the folder where intermediate crawl data is stored (e.g. list of urls that are extracted from previously
         // fetched pages and need to be crawled later).
-        config.setCrawlStorageFolder("/tmp/crawler4j/");
+        config.setCrawlStorageFolder(storageDir);
 
         // Done via URL Frontier!
         config.setPolitenessDelay(0);

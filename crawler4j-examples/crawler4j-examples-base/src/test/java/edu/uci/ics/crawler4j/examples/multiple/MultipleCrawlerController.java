@@ -19,9 +19,11 @@
  */
 package edu.uci.ics.crawler4j.examples.multiple;
 
+import java.io.File;
 import java.util.List;
 
 import crawlercommons.filters.basic.BasicURLNormalizer;
+import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.frontier.SleepycatFrontierConfiguration;
 import edu.uci.ics.crawler4j.url.SleepycatWebURLFactory;
@@ -40,14 +42,14 @@ public class MultipleCrawlerController {
     public static void main(String[] args) throws Exception {
         // The folder where intermediate crawl data is stored (e.g. list of urls that are extracted from previously
         // fetched pages and need to be crawled later).
-        String crawlStorageFolder = "/tmp/crawler4j/";
+        File storageDir = Files.createTmpDir("crawler4j");
 
         CrawlConfig config1 = new CrawlConfig();
         CrawlConfig config2 = new CrawlConfig();
 
         // The two crawlers should have different storage folders for their intermediate data.
-        config1.setCrawlStorageFolder(crawlStorageFolder + "/crawler1");
-        config2.setCrawlStorageFolder(crawlStorageFolder + "/crawler2");
+        config1.setCrawlStorageFolder(new File(storageDir, "crawler1"));
+        config2.setCrawlStorageFolder(new File(storageDir, "crawler2"));
 
         config1.setPolitenessDelay(1000);
         config2.setPolitenessDelay(2000);

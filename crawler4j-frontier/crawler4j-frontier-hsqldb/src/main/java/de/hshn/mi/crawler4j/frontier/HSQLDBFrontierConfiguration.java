@@ -29,6 +29,7 @@ import edu.uci.ics.crawler4j.frontier.Frontier;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.url.WebURLFactory;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -100,9 +101,9 @@ public class HSQLDBFrontierConfiguration implements FrontierConfiguration {
 
     }
 
-    private String getJDBCUrl(boolean resumableCrawling, String crawlStorageFolder) {
+    private String getJDBCUrl(boolean resumableCrawling, File crawlStorageFolder) {
         if (resumableCrawling) {
-            return "jdbc:hsqldb:file:" + crawlStorageFolder + "/frontier;sql.syntax_pgs=true";
+            return "jdbc:hsqldb:file:" + crawlStorageFolder.getAbsolutePath() + "/frontier;sql.syntax_pgs=true";
         } else {
             return "jdbc:hsqldb:mem:crawler4j;sql.syntax_pgs=true";
         }

@@ -19,6 +19,7 @@
  */
 package edu.uci.ics.crawler4j.crawler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -38,7 +39,7 @@ public class CrawlConfig {
      * The folder which will be used by crawler for storing the intermediate
      * crawl data. The content of this folder should not be modified manually.
      */
-    private String crawlStorageFolder;
+    private File crawlStorageFolder;
 
     /**
      * If this feature is enabled, you would be able to resume a previously
@@ -259,7 +260,7 @@ public class CrawlConfig {
         }
     }
 
-    public String getCrawlStorageFolder() {
+    public File getCrawlStorageFolder() {
         return crawlStorageFolder;
     }
 
@@ -268,9 +269,10 @@ public class CrawlConfig {
      * intermediate crawl data (e.g. list of urls that are extracted
      * from previously fetched pages and need to be crawled later).
      * Content of this folder should not be modified manually.
+     * @param dir that must already exist
      */
-    public void setCrawlStorageFolder(String crawlStorageFolder) {
-        this.crawlStorageFolder = crawlStorageFolder;
+    public void setCrawlStorageFolder(File dir) {
+        this.crawlStorageFolder = dir;
     }
 
     public boolean isResumableCrawling() {
