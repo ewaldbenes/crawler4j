@@ -23,6 +23,7 @@ import crawlercommons.filters.basic.BasicURLNormalizer;
 import de.hshn.mi.crawler4j.frontier.HSQLDBFrontierConfiguration;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
@@ -100,7 +101,8 @@ public class HSQLDBBasicCrawlController {
         AtomicInteger numSeenImages = new AtomicInteger();
 
         // The factory which creates instances of crawlers.
-        CrawlController.WebCrawlerFactory<BasicWikipediaCrawler> factory = () -> new BasicWikipediaCrawler(numSeenImages);
+        CrawlController.WebCrawlerFactory<WebCrawler> factory = () -> new BasicWikipediaCrawler()
+                .setUrlFilter(new BasicWikipediaCrawler.Filter(numSeenImages));
 
         // Start the crawl. This is a blocking operation, meaning that your code
         // will reach the line after this only when crawling is finished.

@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import edu.uci.ics.crawler4j.crawler.filter.UrlFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,20 +36,11 @@ import edu.uci.ics.crawler4j.url.WebURL;
 public class LocalDataCollectorCrawler extends WebCrawler {
     private static final Logger logger = LoggerFactory.getLogger(LocalDataCollectorCrawler.class);
 
-    private static final Pattern FILTERS = Pattern.compile(
-        ".*(\\.(css|js|bmp|gif|jpe?g|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf" +
-        "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
-
     CrawlStat myCrawlStat;
 
     public LocalDataCollectorCrawler() {
         myCrawlStat = new CrawlStat();
-    }
-
-    @Override
-    public boolean shouldVisit(Page referringPage, WebURL url) {
-        String href = url.getURL().toLowerCase(Locale.ROOT);
-        return !FILTERS.matcher(href).matches() && href.startsWith("https://www.ics.uci.edu/");
+        setUrlFilter(new Filter());
     }
 
     @Override
@@ -92,5 +84,17 @@ public class LocalDataCollectorCrawler extends WebCrawler {
         logger.info("Crawler {} > Processed Pages: {}", id, myCrawlStat.getTotalProcessedPages());
         logger.info("Crawler {} > Total Links Found: {}", id, myCrawlStat.getTotalLinks());
         logger.info("Crawler {} > Total Text Size: {}", id, myCrawlStat.getTotalTextSize());
+    }
+
+    record Filter() implements UrlFilter {
+        private static final Pattern FILTERS = Pattern.compile(
+                ".*(\\.(css|js|bmp|gif|jpe?g|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf" +
+                        "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
+
+        @Override
+        public boolean accept(Page referringPage, WebURL url) {
+            String href = url.getURL().toLowerCase(Locale.ROOT);
+            return !FILTERS.matcher(href).matches() && href.startsWith("https://www.ics.uci.edu/");
+        }
     }
 }

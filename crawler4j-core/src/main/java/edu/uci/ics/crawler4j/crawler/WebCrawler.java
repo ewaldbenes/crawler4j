@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import edu.uci.ics.crawler4j.crawler.filter.UrlFilter;
+import edu.uci.ics.crawler4j.crawler.filter.UrlFilters;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.impl.EnglishReasonPhraseCatalog;
 import org.slf4j.Logger;
@@ -93,6 +95,7 @@ public class WebCrawler implements Runnable {
      * The Frontier object that manages the crawl queue.
      */
     private Frontier frontier;
+	private UrlFilter urlFilter;
 
     /**
      * Is the current crawler instance waiting for new URLs? This field is
@@ -122,6 +125,8 @@ public class WebCrawler implements Runnable {
         this.myController = crawlController;
         this.isWaitingForNewURLs = false;
         this.batchReadSize = crawlController.getConfig().getBatchReadSize();
+		UrlFilter orig = this.urlFilter;
+		this.urlFilter = new UrlFilters.ChainedUrlFilter(new UrlFilters.NoFollowUrlFilter(crawlController.getConfig().isRespectNoFollow()), orig);
     }
 
     /**
@@ -334,33 +339,7 @@ public class WebCrawler implements Runnable {
         }
     }
 
-    /**
-     * Classes that extends WebCrawler should overwrite this function to tell the
-     * crawler whether the given url should be crawled or not. The following
-     * default implementation indicates that all urls should be included in the crawl
-     * except those with a nofollow flag.
-     *
-     * @param url           the url which we are interested to know whether it should be
-     *                      included in the crawl or not.
-     * @param referringPage The Page in which this url was found.
-     * @return if the url should be included in the crawl it returns true,
-     * otherwise false is returned.
-     */
-    public boolean shouldVisit(Page referringPage, WebURL url) {
-        if (myController.getConfig().isRespectNoFollow()) {
-            return !((referringPage != null &&
-                    referringPage.getContentType() != null &&
-                    referringPage.getContentType().contains("html") &&
-                    ((HtmlParseData) referringPage.getParseData())
-                            .getMetaTagValue("robots")
-                            .contains("nofollow")) ||
-                    url.getAttribute("rel").contains("nofollow"));
-        }
-
-        return true;
-    }
-
-    /**
+	/**
      * Determine whether links found at the given URL should be added to the queue for crawling.
      * By default this method returns true always, but classes that extend WebCrawler can
      * override it in order to implement particular policies about which pages should be
@@ -506,7 +485,7 @@ public class WebCrawler implements Runnable {
 					webURL.setDocid(-1);
 					webURL.setDepth((short) (curURL.getDepth() + 1));
 					if (maxCrawlDepth == -1 || curURL.getDepth() < maxCrawlDepth) {
-						if (shouldVisit(page, webURL)) {
+						if (urlFilter.accept(page, webURL)) {
 							if (robotstxtServer.allows(webURL)) {
 								webURL.setDocid(docIdServer.getNewDocID(webURL.getURL()));
 								toSchedule.add(webURL);
@@ -556,7 +535,7 @@ public class WebCrawler implements Runnable {
 				webURL.setDepth(curURL.getDepth());
 				webURL.setDocid(-1);
 				webURL.setAnchor(curURL.getAnchor());
-				if (shouldVisit(page, webURL)) {
+				if (urlFilter.accept(page, webURL)) {
 					if (!shouldFollowLinksIn(webURL) || robotstxtServer.allows(webURL)) {
 						webURL.setDocid(docIdServer.getNewDocID(movedToUrl));
 						frontier.schedule(webURL);
@@ -589,4 +568,9 @@ public class WebCrawler implements Runnable {
     private synchronized void setError(Throwable error) {
         this.error = error;
     }
+
+	public WebCrawler setUrlFilter(UrlFilter filter) {
+		this.urlFilter = filter;
+		return this;
+	}
 }

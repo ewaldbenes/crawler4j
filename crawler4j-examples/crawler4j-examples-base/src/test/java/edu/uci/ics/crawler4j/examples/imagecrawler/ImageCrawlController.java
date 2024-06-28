@@ -25,6 +25,7 @@ import java.util.List;
 import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
@@ -68,7 +69,8 @@ public class ImageCrawlController {
             controller.addSeed(domain);
         }
 
-        CrawlController.WebCrawlerFactory<ImageCrawler> factory = () -> new ImageCrawler(storageFolder, crawlDomains);
+        CrawlController.WebCrawlerFactory<WebCrawler> factory = () -> new ImageCrawler(storageFolder)
+                .setUrlFilter(new ImageCrawler.ImageUrlFilter(crawlDomains));
         controller.start(factory, numberOfCrawlers);
     }
 }

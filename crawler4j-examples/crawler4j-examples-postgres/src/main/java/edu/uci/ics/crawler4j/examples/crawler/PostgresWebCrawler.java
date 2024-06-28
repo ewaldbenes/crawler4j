@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import edu.uci.ics.crawler4j.crawler.filter.UrlFilter;
 import org.slf4j.Logger;
 
 import edu.uci.ics.crawler4j.crawler.Page;
@@ -35,27 +36,10 @@ public class PostgresWebCrawler extends WebCrawler {
 
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(PostgresWebCrawler.class);
 
-    private static final Pattern FILE_ENDING_EXCLUSION_PATTERN = Pattern.compile(".*(\\.(" +
-            "css|js" +
-            "|bmp|gif|jpe?g|JPE?G|png|tiff?|ico|nef|raw" +
-            "|mid|mp2|mp3|mp4|wav|wma|flv|mpe?g" +
-            "|avi|mov|mpeg|ram|m4v|wmv|rm|smil" +
-            "|pdf|doc|docx|pub|xls|xlsx|vsd|ppt|pptx" +
-            "|swf" +
-            "|zip|rar|gz|bz2|7z|bin" +
-            "|xml|txt|java|c|cpp|exe" +
-            "))$");
-
     private final PostgresDBService postgresDBService;
 
     public PostgresWebCrawler(PostgresDBService postgresDBService) {
         this.postgresDBService = postgresDBService;
-    }
-
-    @Override
-    public boolean shouldVisit(Page referringPage, WebURL url) {
-        String href = url.getURL().toLowerCase(Locale.ROOT);
-        return !FILE_ENDING_EXCLUSION_PATTERN.matcher(href).matches();
     }
 
     @Override
@@ -84,6 +68,24 @@ public class PostgresWebCrawler extends WebCrawler {
     public void onBeforeExit() {
         if (postgresDBService != null) {
             postgresDBService.close();
+        }
+    }
+
+    record Filter() implements UrlFilter {
+        private static final Pattern FILE_ENDING_EXCLUSION_PATTERN = Pattern.compile(".*(\\.(" +
+                "css|js" +
+                "|bmp|gif|jpe?g|JPE?G|png|tiff?|ico|nef|raw" +
+                "|mid|mp2|mp3|mp4|wav|wma|flv|mpe?g" +
+                "|avi|mov|mpeg|ram|m4v|wmv|rm|smil" +
+                "|pdf|doc|docx|pub|xls|xlsx|vsd|ppt|pptx" +
+                "|swf" +
+                "|zip|rar|gz|bz2|7z|bin" +
+                "|xml|txt|java|c|cpp|exe" +
+                "))$");
+        @Override
+        public boolean accept(Page referringPage, WebURL url) {
+            String href = url.getURL().toLowerCase(Locale.ROOT);
+            return !FILE_ENDING_EXCLUSION_PATTERN.matcher(href).matches();
         }
     }
 }

@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
@@ -100,7 +101,7 @@ public class BasicCrawlController {
         AtomicInteger numSeenImages = new AtomicInteger();
 
         // The factory which creates instances of crawlers.
-        CrawlController.WebCrawlerFactory<BasicCrawler> factory = () -> new BasicCrawler(numSeenImages);
+        CrawlController.WebCrawlerFactory<WebCrawler> factory = () -> new BasicCrawler().setUrlFilter(new BasicCrawler.BasicUrlFilter(numSeenImages));
 
         // Start the crawl. This is a blocking operation, meaning that your code
         // will reach the line after this only when crawling is finished.

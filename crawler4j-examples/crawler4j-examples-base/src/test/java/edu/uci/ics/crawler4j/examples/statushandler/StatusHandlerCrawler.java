@@ -22,6 +22,7 @@ package edu.uci.ics.crawler4j.examples.statushandler;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import edu.uci.ics.crawler4j.crawler.filter.UrlFilter;
 import org.apache.hc.core5.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,19 +37,8 @@ import edu.uci.ics.crawler4j.url.WebURL;
 public class StatusHandlerCrawler extends WebCrawler {
     private static final Logger logger = LoggerFactory.getLogger(StatusHandlerCrawler.class);
 
-    private static final Pattern FILTERS = Pattern.compile(
-        ".*(\\.(css|js|bmp|gif|jpe?g|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf" +
-        "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
-
-    /**
-     * You should implement this function to specify whether
-     * the given url should be crawled or not (based on your
-     * crawling logic).
-     */
-    @Override
-    public boolean shouldVisit(Page referringPage, WebURL url) {
-        String href = url.getURL().toLowerCase(Locale.ROOT);
-        return !FILTERS.matcher(href).matches() && href.startsWith("https://www.ics.uci.edu/");
+    public StatusHandlerCrawler() {
+        setUrlFilter(new Filter());
     }
 
     /**
@@ -72,6 +62,17 @@ public class StatusHandlerCrawler extends WebCrawler {
                 logger.warn("Non success status for link: {} status code: {}, description: {} ",
                             webUrl.getURL(), statusCode, statusDescription);
             }
+        }
+    }
+
+    record Filter() implements UrlFilter {
+        private static final Pattern FILTERS = Pattern.compile(
+                ".*(\\.(css|js|bmp|gif|jpe?g|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf" +
+                        "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
+        @Override
+        public boolean accept(Page referringPage, WebURL url) {
+            String href = url.getURL().toLowerCase(Locale.ROOT);
+            return !FILTERS.matcher(href).matches() && href.startsWith("https://www.ics.uci.edu/");
         }
     }
 }

@@ -30,15 +30,6 @@ import java.util.Set;
 public class BasicUrlFrontierCrawler extends WebCrawler {
 
     /**
-     * You should implement this function to specify whether the given url
-     * should be crawled or not (based on your crawling logic).
-     */
-    @Override
-    public boolean shouldVisit(Page referringPage, WebURL url) {
-        return true;
-    }
-
-    /**
      * This function is called when a page is fetched and ready to be processed
      * by your program.
      */

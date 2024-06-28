@@ -21,8 +21,11 @@ package edu.uci.ics.crawler4j.examples.multiple;
 
 import java.io.File;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import crawlercommons.filters.basic.BasicURLNormalizer;
+import edu.uci.ics.crawler4j.crawler.filter.UrlFilters;
+import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.frontier.SleepycatFrontierConfiguration;
@@ -86,8 +89,12 @@ public class MultipleCrawlerController {
         controller2.addSeed("https://en.wikipedia.org/wiki/Obama");
         controller2.addSeed("https://en.wikipedia.org/wiki/Bing");
 
-        CrawlController.WebCrawlerFactory<BasicCrawler> factory1 = () -> new BasicCrawler(crawler1Domains);
-        CrawlController.WebCrawlerFactory<BasicCrawler> factory2 = () -> new BasicCrawler(crawler2Domains);
+        UrlFilters.RegexPattern regexPatternFilter = new UrlFilters.RegexPattern(Pattern.compile(
+                ".*(\\.(css|js|bmp|gif|jpe?g|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf|rm|smil|wmv|swf|wma|zip|rar|gz))$"));
+        CrawlController.WebCrawlerFactory<WebCrawler> factory1 = () -> new BasicCrawler()
+                .setUrlFilter(new UrlFilters.ChainedUrlFilter(regexPatternFilter, new UrlFilters.UrlStartsWithFromList(crawler1Domains)));
+        CrawlController.WebCrawlerFactory<WebCrawler> factory2 = () -> new BasicCrawler()
+                .setUrlFilter(new UrlFilters.ChainedUrlFilter(regexPatternFilter, new UrlFilters.UrlStartsWithFromList(crawler2Domains)));;
 
         // The first crawler will have 5 concurrent threads and the second crawler will have 7 threads.
         controller1.startNonBlocking(factory1, 5);

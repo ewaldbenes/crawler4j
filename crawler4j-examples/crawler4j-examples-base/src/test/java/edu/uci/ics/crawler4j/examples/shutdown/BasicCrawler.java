@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import edu.uci.ics.crawler4j.crawler.filter.UrlFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,16 +39,8 @@ import edu.uci.ics.crawler4j.url.WebURL;
 public class BasicCrawler extends WebCrawler {
     private static final Logger logger = LoggerFactory.getLogger(BasicCrawler.class);
 
-    private static final Pattern FILTERS = Pattern.compile(
-        ".*(\\.(css|js|bmp|gif|jpe?g|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf" +
-        "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
-
-    private static final String DOMAIN = "https://www.ics.uci.edu/";
-
-    @Override
-    public boolean shouldVisit(Page referringPage, WebURL url) {
-        String href = url.getURL().toLowerCase(Locale.ROOT);
-        return !FILTERS.matcher(href).matches() && href.startsWith(DOMAIN);
+    public BasicCrawler() {
+        setUrlFilter(new BasicUrlFilter());
     }
 
     @Override
@@ -72,5 +65,18 @@ public class BasicCrawler extends WebCrawler {
         }
 
         logger.debug("=============");
+    }
+
+    record BasicUrlFilter() implements UrlFilter {
+        private static final Pattern FILTERS = Pattern.compile(
+                ".*(\\.(css|js|bmp|gif|jpe?g|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf" +
+                        "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
+
+        private static final String DOMAIN = "https://www.ics.uci.edu/";
+        @Override
+        public boolean accept(Page referringPage, WebURL url) {
+            String href = url.getURL().toLowerCase(Locale.ROOT);
+            return !FILTERS.matcher(href).matches() && href.startsWith(DOMAIN);
+        }
     }
 }
