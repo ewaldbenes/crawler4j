@@ -1,14 +1,7 @@
 # crawler4j
 
-![Maven Central](https://img.shields.io/maven-central/v/de.hs-heilbronn.mi/crawler4j-parent.svg?style=flat-square)
-
-This repository contains a fork of [yasserg/crawler4j](https://github.com/yasserg/crawler4j).
-
-# Repository Archived
-
-> **⚠️ Disclaimer: This repository is no longer actively maintained and has been archived.**
-> 
-> For an alternative crawler solution, please visit [Apache StormCrawler (Incubating)](https://stormcrawler.apache.org/).
+This repository contains a fork of [rzo1/crawler4j](https://github.com/rzo1/crawler4j) which itself is a fork of [yasserg/crawler4j](https://github.com/yasserg/crawler4j).
+Yasserg is the initial creator of this crawler.
 
 ---
 
@@ -49,43 +42,20 @@ Some highlights include:
 
 ### Using Maven
 
-Add the following dependency to your pom.xml:
+This fork provides no compiled artifacts on Maven. It might somewhere in the future
+but there are no plans to do so yet.
 
-```xml
-        <dependency>
-            <groupId>de.hs-heilbronn.mi</groupId>
-            <artifactId>crawler4j-with-sleepycat</artifactId>
-            <version>5.0.2</version>
-        </dependency>
-```
+### License hint
 
 **Please check**, if the Oracle license for Sleepycat database complies with your use-case.
 
-Otherwise, you can use `HSQLDB` instead
-
-```xml
-        <dependency>
-            <groupId>de.hs-heilbronn.mi</groupId>
-            <artifactId>crawler4j-with-hsqldb</artifactId>
-            <version>5.0.2</version>
-        </dependency>
-```
-
-or you use an external [crawler-commons/url-frontier](https://github.com/crawler-commons/url-frontier)
-
-```xml
-        <dependency>
-            <groupId>de.hs-heilbronn.mi</groupId>
-            <artifactId>crawler4j-with-urlfrontier</artifactId>
-            <version>5.0.2</version>
-        </dependency>
-```
+Otherwise, you can use `HSQLDB` instead or you use an external [crawler-commons/url-frontier](https://github.com/crawler-commons/url-frontier)
 
 ## Quickstart
 
 ### Archetype
 
-Since `5.0.1`, we provide a Maven archetype to bootstrap crawler4j development. Just urn
+Since `5.0.1`, we provide a Maven archetype to bootstrap crawler4j development. Just run
 
 ```bash
 mvn archetype:generate -DarchetypeGroupId=de.hs-heilbronn.mi -DarchetypeArtifactId=crawler4j-archetype -DarchetypeVersion=5.0.1                
@@ -93,31 +63,17 @@ mvn archetype:generate -DarchetypeGroupId=de.hs-heilbronn.mi -DarchetypeArtifact
 
 ### Manual
 
-You need to create a crawler class that extends WebCrawler. This class decides which URLs
-should be crawled and handles the downloaded page. The following is a sample
-implementation:
+You need to create a crawler class that extends WebCrawler and provide an (optional) UrlFilter implementation.
+The WebCrawler implementation handles the downloaded page and the UrlFilter implementation tells which
+URLs the crawler may fetch. The following is a sample implementation:
 
 ```java
 public class MyCrawler extends WebCrawler {
-
-    private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
-                                                           + "|png|mp3|mp4|zip|gz))$");
-
-    /**
-     * This method receives two parameters. The first parameter is the page
-     * in which we have discovered this new url and the second parameter is
-     * the new url. You should implement this function to specify whether
-     * the given url should be crawled or not (based on your crawling logic).
-     * In this example, we are instructing the crawler to ignore urls that
-     * have css, js, git, ... extensions and to only accept urls that start
-     * with "https://www.ics.uci.edu/". In this case, we didn't need the
-     * referringPage parameter to make the decision.
-     */
-    @Override
-    public boolean shouldVisit(Page referringPage, WebURL url) {
-        String href = url.getURL().toLowerCase();
-        return !FILTERS.matcher(href).matches()
-               && href.startsWith("https://www.ics.uci.edu/");
+    
+    public MyCrawler() {
+        // set your URL filter in the constructor
+        // or call setUrlFilter after creating an instance of the MyCrawler class
+        setUrlFilter(new MyFilter());
     }
 
     /**
@@ -148,21 +104,43 @@ public class MyCrawler extends WebCrawler {
     protected boolean shouldFollowLinksIn(WebURL url) {
         return super.shouldFollowLinksIn(url);
     }
+
+    public record MyFilter(Pattern pattern) implements UrlFilter {
+        private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
+                + "|png|mp3|mp4|zip|gz))$");
+        
+        /**
+         * This method receives two parameters. The first parameter is the page
+         * in which we have discovered this new url and the second parameter is
+         * the new url. You should implement this function to specify whether
+         * the given url should be crawled or not (based on your crawling logic).
+         * In this example, we are instructing the crawler to ignore urls that
+         * have css, js, git, ... extensions and to only accept urls that start
+         * with "https://www.ics.uci.edu/". In this case, we didn't need the
+         * referringPage parameter to make the decision.
+         */
+        @Override
+        public boolean accept(Page referringPage, WebURL url) {
+            String href = url.getURL().toLowerCase();
+            return !FILTERS.matcher(href).matches()
+                    && href.startsWith("https://www.ics.uci.edu/");
+        }
+    }
     
 }
 ```
 
-As can be seen in the above code, there are two main functions that should be overridden:
+As can be seen in the above code, there are two main functions that should be implemented:
 
-- shouldVisit: This function decides whether the given URL should be crawled or not. In
+- MyFilter#accept: This method decides whether the given URL should be crawled or not. In
 the above example, this example is not allowing .css, .js and media files and only allows
  pages within 'www.ics.uci.edu' domain.
-- visit: This function is called after the content of a URL is downloaded successfully.
+- MyCrawler#visit: This method is called after the content of a URL is downloaded successfully.
  You can easily get the url, text, links, html, and unique id of the downloaded page.
-- (extra) shouldFollowLinksIn: can also be overridden as needed. false means none of the outgoing links are scheduled to be crawled.
+- (extra) MyCrawler#shouldFollowLinksIn: can also be overridden as needed. false means none of the outgoing links are scheduled to be crawled.
 
 The flow is as follows:  
-fetch url -> parse => outgoing links are detected -> "shouldFollowLinksIn": decide for all outgoing urls -> "shouldVisit": a more fine grained (per url) decision
+fetch url -> parse => outgoing links are detected -> "shouldFollowLinksIn": decide for all outgoing urls -> "accept": a more fine grained (per url) decision
 
 
 You should also implement a controller class which specifies the seeds of the crawl,
