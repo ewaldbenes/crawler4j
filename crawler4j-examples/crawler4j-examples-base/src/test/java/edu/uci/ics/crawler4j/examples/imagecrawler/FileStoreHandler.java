@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -24,7 +25,7 @@ record FileStoreHandler(File storageFolder) implements ResourceHandler {
 
     @Override
     public void visit(Page page) {
-        String url = page.getWebURL().getURL();
+        URI url = page.getWebURL().getURL();
 
         // We are only interested in processing images which are bigger than 10k
         if (!((page.getParseData() instanceof BinaryParseData) ||
@@ -33,7 +34,7 @@ record FileStoreHandler(File storageFolder) implements ResourceHandler {
         }
 
         // Get a unique name for storing this image
-        String extension = url.substring(url.lastIndexOf('.'));
+        String extension = url.toString().substring(url.toString().lastIndexOf('.'));
         String hashedName = UUID.randomUUID() + extension;
 
         // Store image

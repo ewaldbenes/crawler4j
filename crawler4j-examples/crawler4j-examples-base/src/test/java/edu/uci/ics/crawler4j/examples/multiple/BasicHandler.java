@@ -7,6 +7,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.util.Set;
 
 record BasicHandler() implements ResourceHandler {
@@ -15,7 +16,7 @@ record BasicHandler() implements ResourceHandler {
     @Override
     public void visit(Page page) {
         int docid = page.getWebURL().getDocid();
-        String url = page.getWebURL().getURL();
+        URI url = page.getWebURL().getURL();
         int parentDocid = page.getWebURL().getParentDocid();
 
         logger.debug("Docid: {}", docid);

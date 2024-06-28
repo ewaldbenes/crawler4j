@@ -22,6 +22,7 @@ package edu.uci.ics.crawler4j.tests.fetcher.politeness;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 
+import java.net.URI;
 import java.util.concurrent.Callable;
 
 import org.assertj.core.api.Assertions;
@@ -48,7 +49,7 @@ public class CacheBasedPolitenessServerTestCase {
     public void testApplyPoliteness1() {
 
         WebURL webUrl = new SimpleWebURL();
-        webUrl.setURL("https://github.com/yasserg/crawler4j");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j"));
 
         long politenessDelay = cacheBasedPolitenessServer.applyPoliteness(webUrl);
 
@@ -64,13 +65,13 @@ public class CacheBasedPolitenessServerTestCase {
     public void testApplyPoliteness2() {
 
         WebURL webUrl = new SimpleWebURL();
-        webUrl.setURL("https://github.com/yasserg/crawler4j");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j"));
 
         long politenessDelay = cacheBasedPolitenessServer.applyPoliteness(webUrl);
 
         Assertions.assertThat(politenessDelay).isEqualTo(CachedPolitenessServer.NO_POLITENESS_APPLIED);
 
-        webUrl.setURL("https://github.com/yasserg/crawler4j/blob/master/pom.xml");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j/blob/master/pom.xml"));
 
         politenessDelay = cacheBasedPolitenessServer.applyPoliteness(webUrl);
 
@@ -88,19 +89,19 @@ public class CacheBasedPolitenessServerTestCase {
     public void testApplyPoliteness3() {
 
         WebURL webUrl = new SimpleWebURL();
-        webUrl.setURL("https://github.com/yasserg/crawler4j");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j"));
 
         long politenessDelay = cacheBasedPolitenessServer.applyPoliteness(webUrl);
 
         Assertions.assertThat(politenessDelay).isEqualTo(CachedPolitenessServer.NO_POLITENESS_APPLIED);
 
-        webUrl.setURL("http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html");
+        webUrl.setURL(URI.create("http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html"));
 
         politenessDelay = cacheBasedPolitenessServer.applyPoliteness(webUrl);
 
         Assertions.assertThat(politenessDelay).isEqualTo(CachedPolitenessServer.NO_POLITENESS_APPLIED);
 
-        webUrl.setURL("https://github.com/yasserg/crawler4j/blob/master/pom.xml");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j/blob/master/pom.xml"));
 
         politenessDelay = cacheBasedPolitenessServer.applyPoliteness(webUrl);
 

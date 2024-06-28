@@ -20,11 +20,10 @@
 package edu.uci.ics.crawler4j.crawler;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.frontier.*;
 import edu.uci.ics.crawler4j.url.WebURLFactory;
 import org.slf4j.Logger;
@@ -77,24 +76,23 @@ public class CrawlController {
     protected DocIDServer docIdServer;
     protected TLDList tldList;
     protected WebURLFactory webURLFactory;
-    protected BasicURLNormalizer normalizer;
 
     protected final Object waitingLock = new Object();
     protected final FrontierConfiguration frontierConfiguration;
 
     protected Parser parser;
 
-    public CrawlController(CrawlConfig config, BasicURLNormalizer normalizer, PageFetcher pageFetcher,
+    public CrawlController(CrawlConfig config, PageFetcher pageFetcher,
                            RobotstxtServer robotstxtServer, FrontierConfiguration frontierConfiguration) throws Exception {
-        this(config, normalizer, pageFetcher, null, robotstxtServer, null, frontierConfiguration);
+        this(config, pageFetcher, null, robotstxtServer, null, frontierConfiguration);
     }
 
-    public CrawlController(CrawlConfig config, BasicURLNormalizer normalizer, PageFetcher pageFetcher,
+    public CrawlController(CrawlConfig config, PageFetcher pageFetcher,
                            RobotstxtServer robotstxtServer, TLDList tldList, FrontierConfiguration frontierConfiguration) throws Exception {
-        this(config, normalizer, pageFetcher, null, robotstxtServer, tldList, frontierConfiguration);
+        this(config, pageFetcher, null, robotstxtServer, tldList, frontierConfiguration);
     }
 
-    public CrawlController(CrawlConfig config, BasicURLNormalizer normalizer, PageFetcher pageFetcher, Parser parser,
+    public CrawlController(CrawlConfig config, PageFetcher pageFetcher, Parser parser,
                            RobotstxtServer robotstxtServer, TLDList tldList, FrontierConfiguration frontierConfiguration) throws Exception {
         config.validate();
         this.config = config;
@@ -111,10 +109,9 @@ public class CrawlController {
         this.frontier = frontierConfiguration.getFrontier();
         this.docIdServer = frontierConfiguration.getDocIDServer();
         this.webURLFactory = frontierConfiguration.getWebURLFactory();
-        this.normalizer = normalizer;
 
         this.pageFetcher = pageFetcher;
-        this.parser = parser == null ? new Parser(config, normalizer, tldList, webURLFactory) : parser;
+        this.parser = parser == null ? new Parser(config, tldList, webURLFactory) : parser;
         this.robotstxtServer = robotstxtServer;
 
         finished = false;
@@ -448,7 +445,7 @@ public class CrawlController {
     public void addSeeds(List<String> pageUrls) throws InterruptedException {
         List<WebURL> urls = new ArrayList<>();
         for (String pageUrl : pageUrls) {
-            WebURL u = addSeedHelper(pageUrl, -1);
+            WebURL u = addSeedHelper(-1, URI.create(pageUrl));
             if (u != null) {
                 urls.add(u);
             }
@@ -477,48 +474,45 @@ public class CrawlController {
      * @throws InterruptedException
      */
     public void addSeed(String pageUrl, int docId) throws InterruptedException {
-        WebURL webURL = addSeedHelper(pageUrl, docId);
+        WebURL webURL = addSeedHelper(docId, URI.create(pageUrl));
         if(webURL != null) {
             frontier.schedule(webURL);
         }
     }
 
-    private WebURL addSeedHelper(String pageUrl, int docId) throws InterruptedException {
-        String canonicalUrl = normalizer.filter(pageUrl);
-        if (canonicalUrl == null) {
-            logger.error("Invalid seed URL: {}", pageUrl);
-        } else {
-            if (docId < 0) {
-                docId = docIdServer.getDocId(canonicalUrl);
-                if (docId > 0) {
-                    logger.trace("This URL is already seen.");
-                    return null;
-                }
-                docId = docIdServer.getNewDocID(canonicalUrl);
-            } else {
-                try {
-                    docIdServer.addUrlAndDocId(canonicalUrl, docId);
-                } catch (RuntimeException e) {
-                    if (config.isHaltOnError()) {
-                        throw e;
-                    } else {
-                        logger.error("Could not add seed: {}", e.getMessage());
-                    }
-                }
+    private WebURL addSeedHelper(int docId, URI originalUrl) throws InterruptedException {
+        URI normalizedUrl = originalUrl.normalize();
+        if (docId < 0) {
+            docId = docIdServer.getDocId(normalizedUrl);
+            if (docId > 0) {
+                logger.trace("This URL is already seen.");
+                return null;
             }
-
-            WebURL webUrl = webURLFactory.newWebUrl();
-            webUrl.setTldList(tldList);
-            webUrl.setURL(canonicalUrl);
-            webUrl.setDocid(docId);
-            webUrl.setDepth((short) 0);
-            if (robotstxtServer.allows(webUrl, true)) {
-               return webUrl;
-            } else {
-                // using the WARN level here, as the user specifically asked to add this seed
-                logger.warn("Robots.txt does not allow this seed: {}", pageUrl);
+            docId = docIdServer.getNewDocID(normalizedUrl);
+        } else {
+            try {
+                docIdServer.addUrlAndDocId(normalizedUrl, docId);
+            } catch (RuntimeException e) {
+                if (config.isHaltOnError()) {
+                    throw e;
+                } else {
+                    logger.error("Could not add seed: {}", e.getMessage());
+                }
             }
         }
+
+        WebURL webUrl = webURLFactory.newWebUrl();
+        webUrl.setTldList(tldList);
+        webUrl.setURL(normalizedUrl);
+        webUrl.setDocid(docId);
+        webUrl.setDepth((short) 0);
+        if (robotstxtServer.allows(webUrl, true)) {
+           return webUrl;
+        } else {
+            // using the WARN level here, as the user specifically asked to add this seed
+            logger.warn("Robots.txt does not allow this seed: {}", normalizedUrl);
+        }
+
         return null;
     }
 
@@ -536,18 +530,14 @@ public class CrawlController {
      * @param docId the document id that you want to be assigned to this URL.
      */
     public void addSeenUrl(String url, int docId) {
-        String canonicalUrl = normalizer.filter(url);
-        if (canonicalUrl == null) {
-            logger.error("Invalid Url: {} (can't cannonicalize it!)", url);
-        } else {
-            try {
-                docIdServer.addUrlAndDocId(canonicalUrl, docId);
-            } catch (RuntimeException e) {
-                if (config.isHaltOnError()) {
-                    throw e;
-                } else {
-                    logger.error("Could not add seen url: {}", e.getMessage());
-                }
+        URI url2 = URI.create(url).normalize();
+        try {
+            docIdServer.addUrlAndDocId(url2, docId);
+        } catch (RuntimeException e) {
+            if (config.isHaltOnError()) {
+                throw e;
+            } else {
+                logger.error("Could not add seen url: {}", e.getMessage());
             }
         }
     }

@@ -21,6 +21,7 @@ package edu.uci.ics.crawler4j.robotstxt;
 
 import crawlercommons.robots.BaseRobotRules;
 
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 public class RobotRules {
@@ -43,9 +44,9 @@ public class RobotRules {
         return ((System.currentTimeMillis() - timeFetched) > EXPIRATION_DELAY);
     }
 
-    public boolean isAllowed(String url) {
+    public boolean isAllowed(URI url) {
         this.timeLastAccessed = System.currentTimeMillis();
-        return wrapped.isAllowed(url);
+        return wrapped.isAllowed(url.toString());
     }
 
     public long getTimeLastAccessed() {

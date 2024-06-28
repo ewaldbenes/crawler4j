@@ -48,7 +48,7 @@ public final class UrlFilters {
     public record RegexPattern(Pattern pattern) implements UrlFilter {
         @Override
         public boolean accept(Page referringPage, WebURL url) {
-            String href = url.getURL().toLowerCase(Locale.ROOT);
+            String href = url.getURL().toString();
             if (pattern.matcher(href).matches()) {
                 return false;
             }
@@ -59,7 +59,7 @@ public final class UrlFilters {
     public record UrlStartsWithFromList(List<String> domains) implements UrlFilter {
         @Override
         public boolean accept(Page referringPage, WebURL url) {
-            String href = url.getURL().toLowerCase(Locale.ROOT);
+            String href = url.getURL().toString();
             for (String crawlDomain : domains) {
                 if (href.startsWith(crawlDomain)) {
                     return true;

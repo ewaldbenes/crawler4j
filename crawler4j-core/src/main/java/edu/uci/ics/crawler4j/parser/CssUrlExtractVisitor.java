@@ -19,6 +19,7 @@
  */
 package edu.uci.ics.crawler4j.parser;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -33,26 +34,21 @@ import com.helger.css.decl.CSSImportRule;
 import com.helger.css.decl.ICSSTopLevelRule;
 import com.helger.css.decl.visit.DefaultCSSUrlVisitor;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
-import edu.uci.ics.crawler4j.url.UrlResolver;
-
 public class CssUrlExtractVisitor extends DefaultCSSUrlVisitor {
 	
-	private final String referenceAbsoluteUrl;
-	private final BasicURLNormalizer normalizer;
-	private final Set<String> seedUrls = new LinkedHashSet<>();
+	private final URI referenceAbsoluteUrl;
+	private final Set<URI> seedUrls = new LinkedHashSet<>();
 	
 	
-	public CssUrlExtractVisitor(final String referenceAbsoluteUrl, final BasicURLNormalizer normalizer) {
+	public CssUrlExtractVisitor(final URI referenceAbsoluteUrl) {
 		this.referenceAbsoluteUrl = referenceAbsoluteUrl;
-		this.normalizer = normalizer;
 	}
 	
 	
 	
 	@Override
 	public void onImport(@Nonnull final CSSImportRule aImportRule) {
-		addSeedUrl(aImportRule.getLocationString());
+		addSeedUrl(URI.create(aImportRule.getLocationString()));
 	}
 	
 	
@@ -60,7 +56,7 @@ public class CssUrlExtractVisitor extends DefaultCSSUrlVisitor {
 	public void onUrlDeclaration(@Nullable final ICSSTopLevelRule aTopLevelRule,
 			@Nonnull final CSSDeclaration aDeclaration, @Nonnull final CSSExpressionMemberTermURI aURITerm)
 	{
-		addSeedUrl(aURITerm.getURIString());
+		addSeedUrl(URI.create(aURITerm.getURIString()));
 	}
 	
 	
@@ -68,32 +64,21 @@ public class CssUrlExtractVisitor extends DefaultCSSUrlVisitor {
 	/**
 	 * @return the added seed url or empty
 	 */
-	protected Optional<String> addSeedUrl(final String url) {
-		if (url == null || url.isBlank() || url.startsWith("data:")) {
+	protected Optional<URI> addSeedUrl(final URI url) {
+		if (url == null || url.toString().startsWith("data:")) {
 			return Optional.empty();
 		}
-		
-		final String seedUrl = toSeedUrl(url);
+		final URI seedUrl = referenceAbsoluteUrl.resolve(url);
 		seedUrls.add(seedUrl);
 		return Optional.of(seedUrl);
 	}
-	
-	private String toSeedUrl(final String url) {
-		// Normalization is needed, because the String will be input for URI.create(...).
-		return normalizer.filter(UrlResolver.resolveUrl((referenceAbsoluteUrl == null) ? "" : referenceAbsoluteUrl, url));
-	}
-	
-	
-	
-	public String getReferenceAbsoluteUrl() {
+
+
+	public URI getReferenceAbsoluteUrl() {
 		return referenceAbsoluteUrl;
 	}
 	
-	public BasicURLNormalizer getNormalizer() {
-		return normalizer;
-	}
-	
-	public Set<String> getSeedUrls() {
+	public Set<URI> getSeedUrls() {
 		return Collections.unmodifiableSet(seedUrls);
 	}
 }

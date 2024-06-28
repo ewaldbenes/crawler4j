@@ -19,6 +19,7 @@
  */
 package edu.uci.ics.crawler4j.util;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -41,7 +42,7 @@ import edu.uci.ics.crawler4j.url.WebURLFactory;
  */
 public class Net {
 
-    private final Function<Url, WebURL> urlMapper;
+    private final Function<URI, WebURL> urlMapper;
     private final CrawlConfig config;
 
     public Net(CrawlConfig config, TLDList tldList, WebURLFactory factory) {
@@ -49,7 +50,7 @@ public class Net {
         this.urlMapper = url -> {
             WebURL webUrl = factory.newWebUrl();
             webUrl.setTldList(tldList);
-            webUrl.setURL(url.getFullUrl());
+            webUrl.setURL(url);
             return webUrl;
         };
     }
@@ -60,7 +61,13 @@ public class Net {
         } else {
             UrlDetector detector = new UrlDetector(input, getOptions());
             List<Url> urls = detector.detect();
-            return urls.stream().map(urlMapper).collect(Collectors.toSet());
+            return urls.stream().map(url -> {
+                try {
+                    return URI.create(url.getFullUrl());
+                } catch (IllegalArgumentException e) {
+                    return null;
+                }
+            }).filter(uri -> uri != null).map(urlMapper).collect(Collectors.toSet());
         }
     }
 

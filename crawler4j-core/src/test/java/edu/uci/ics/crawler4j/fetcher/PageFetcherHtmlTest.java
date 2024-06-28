@@ -30,6 +30,8 @@ import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.url.WebURLImpl;
 
+import java.net.URI;
+
 public class PageFetcherHtmlTest {
 
     @RegisterExtension
@@ -68,14 +70,14 @@ public class PageFetcherHtmlTest {
         CrawlConfig cfg = new CrawlConfig();
         WebURLImpl url = new WebURLImpl();
 
-        url.setURL("http://localhost:" + wm.getPort() + "/some/index.html");
+        url.setURL(URI.create("http://localhost:" + wm.getPort() + "/some/index.html"));
         PageFetcher pf = new PageFetcherHtmlOnly(cfg);
         pf.fetchPage(url).fetchContent(new Page(url), 47);
 
         wm.verify(1, WireMock.headRequestedFor(WireMock.urlEqualTo("/some/index.html")));
         wm.verify(1, WireMock.getRequestedFor(WireMock.urlEqualTo("/some/index.html")));
 
-        url.setURL("http://localhost:" + wm.getPort() + "/some/invoice.pdf");
+        url.setURL(URI.create("http://localhost:" + wm.getPort() + "/some/invoice.pdf"));
         pf = new PageFetcherHtmlOnly(cfg);
         pf.fetchPage(url).fetchContent(new Page(url), 4);
 

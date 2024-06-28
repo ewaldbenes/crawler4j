@@ -19,6 +19,7 @@
  */
 package edu.uci.ics.crawler4j.parser;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +62,7 @@ public class HtmlContentHandler extends DefaultHandler {
         }
     }
 
-    private String base;
+    private URI base;
     private String metaRefresh;
     private String metaLocation;
     private final Map<String, String> metaTags = new HashMap<>();
@@ -106,7 +107,7 @@ public class HtmlContentHandler extends DefaultHandler {
             if (base != null) { // We only consider the first occurrence of the Base element.
                 String href = attributes.getValue("href");
                 if (href != null) {
-                    base = href;
+                    base = URI.create(href);
                 }
             }
         } else if (element == Element.META) {
@@ -203,7 +204,7 @@ public class HtmlContentHandler extends DefaultHandler {
         return outgoingUrls;
     }
 
-    public String getBaseUrl() {
+    public URI getBaseUrl() {
         return base;
     }
 

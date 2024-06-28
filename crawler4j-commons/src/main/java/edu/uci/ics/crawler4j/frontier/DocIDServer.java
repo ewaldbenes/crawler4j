@@ -19,6 +19,8 @@
  */
 package edu.uci.ics.crawler4j.frontier;
 
+import java.net.URI;
+
 public interface DocIDServer {
 
     /**
@@ -27,13 +29,13 @@ public interface DocIDServer {
      * @param url the URL for which the docid is returned.
      * @return the docid of the url if it is seen before. Otherwise -1 is returned.
      */
-    int getDocId(String url);
+    int getDocId(URI url);
 
-    int getNewDocID(String url);
+    int getNewDocID(URI url);
 
-    void addUrlAndDocId(String url, int docId);
+    void addUrlAndDocId(URI url, int docId);
 
-    boolean isSeenBefore(String url);
+    boolean isSeenBefore(URI url);
 
     int getDocCount();
 

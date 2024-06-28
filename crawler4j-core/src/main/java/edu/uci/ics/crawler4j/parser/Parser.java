@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.Constants;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.Page;
@@ -45,18 +44,16 @@ public class Parser {
 
     private final Net net;
     private final WebURLFactory factory;
-    private final BasicURLNormalizer normalizer;
 
-    public Parser(CrawlConfig config, BasicURLNormalizer normalizer, TLDList tldList, WebURLFactory webURLFactory) throws IOException {
-        this(config, normalizer, new TikaHtmlParser(config, normalizer, tldList, webURLFactory), tldList, webURLFactory);
+    public Parser(CrawlConfig config, TLDList tldList, WebURLFactory webURLFactory) throws IOException {
+        this(config, new TikaHtmlParser(config, tldList, webURLFactory), tldList, webURLFactory);
     }
 
-    public Parser(CrawlConfig config, BasicURLNormalizer normalizer, HtmlParser htmlParser, TLDList tldList, WebURLFactory webURLFactory) throws IOException {
+    public Parser(CrawlConfig config, HtmlParser htmlParser, TLDList tldList, WebURLFactory webURLFactory) throws IOException {
         this.config = config;
         this.htmlContentParser = htmlParser;
         this.net = new Net(config, tldList, webURLFactory);
         this.factory = webURLFactory;
-        this.normalizer = normalizer;
         if (config.isLanguageDetection()) {
             this.languageDetector = new TikaLanguageDetector();
         }
@@ -139,7 +136,7 @@ public class Parser {
      * Open for extension
      */
     protected CssParseData createCssParseData() {
-        return new CssParseData(getFactory(), getNormalizer(), getConfig().isHaltOnError());
+        return new CssParseData(getFactory(), getConfig().isHaltOnError());
     }
 
     /**
@@ -163,10 +160,6 @@ public class Parser {
 
     protected WebURLFactory getFactory() {
         return factory;
-    }
-
-    protected BasicURLNormalizer getNormalizer() {
-        return normalizer;
     }
 
     protected HtmlParser getHtmlContentParser() {

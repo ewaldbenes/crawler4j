@@ -20,6 +20,7 @@
 package edu.uci.ics.crawler4j.fetcher;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -33,20 +34,19 @@ import edu.uci.ics.crawler4j.PolitenessServer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.exceptions.PageBiggerThanMaxSizeException;
 import edu.uci.ics.crawler4j.fetcher.politeness.SimplePolitenessServer;
-import edu.uci.ics.crawler4j.test.TestUtils;
 import edu.uci.ics.crawler4j.url.WebURL;
 
 public class PageFetcherHtmlOnly extends PageFetcher {
 
     public PageFetcherHtmlOnly(CrawlConfig config)
             throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-        super(config, TestUtils.newNormalizer(), new SimplePolitenessServer(config));
+        super(config, new SimplePolitenessServer(config));
     }
 
     @Override
     public PageFetchResult fetchPage(WebURL webUrl)
             throws InterruptedException, IOException, PageBiggerThanMaxSizeException, URISyntaxException {
-        String toFetchURL = webUrl.getURL();
+        URI toFetchURL = webUrl.getURL();
 
         PageFetchResult fetchResult = new PageFetchResult(config.isHaltOnError());
         HttpHead head = null;

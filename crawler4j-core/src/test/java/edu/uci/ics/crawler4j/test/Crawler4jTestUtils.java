@@ -21,8 +21,8 @@ package edu.uci.ics.crawler4j.test;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URI;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.parser.CssParseData;
 import edu.uci.ics.crawler4j.url.TLDList;
@@ -32,19 +32,12 @@ import edu.uci.ics.crawler4j.url.WebURLFactory;
 public final class Crawler4jTestUtils {
 	private Crawler4jTestUtils() {
 	}
-	
-	
+
 	public static WebURLFactory newWebURLFactory() {
 		return new SimpleWebURLFactory();
 	}
 	
-	public static BasicURLNormalizer newNormalizer() {
-		return BasicURLNormalizer.newBuilder()//
-				.idnNormalization(BasicURLNormalizer.IdnNormalization.NONE)//
-				.build();
-	}
-	
-	public static WebURL newWebURL(final String url) {
+	public static WebURL newWebURL(URI url) {
 		final WebURL result = new SimpleWebURL();
 		result.setTldList(newTLDList());
 		result.setURL(url);
@@ -66,6 +59,6 @@ public final class Crawler4jTestUtils {
 	}
 	
 	public static CssParseData newCssParseData(final boolean haltOnError) {
-		return new CssParseData(newWebURLFactory(), newNormalizer(), haltOnError);
+		return new CssParseData(newWebURLFactory(), haltOnError);
 	}
 }

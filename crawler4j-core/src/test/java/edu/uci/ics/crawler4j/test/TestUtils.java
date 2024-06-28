@@ -26,7 +26,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.frontier.SleepycatFrontierConfiguration;
@@ -46,12 +45,6 @@ public final class TestUtils {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
-	}
-	
-	public static BasicURLNormalizer newNormalizer() {
-		return BasicURLNormalizer.newBuilder()//
-				.idnNormalization(BasicURLNormalizer.IdnNormalization.NONE)//
-				.build();
 	}
 	
 	public static FrontierConfiguration createFrontierConfiguration(final CrawlConfig config) {

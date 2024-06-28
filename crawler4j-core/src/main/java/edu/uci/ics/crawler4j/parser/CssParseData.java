@@ -36,6 +36,7 @@
 
 package edu.uci.ics.crawler4j.parser;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,7 +46,6 @@ import com.helger.css.decl.visit.CSSVisitor;
 import com.helger.css.reader.CSSReader;
 import com.helger.css.reader.CSSReaderSettings;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.parser.css.ThrowingCSSParseExceptionCallback;
 import edu.uci.ics.crawler4j.url.WebURL;
@@ -54,13 +54,11 @@ import edu.uci.ics.crawler4j.url.WebURLFactory;
 public class CssParseData extends TextParseData {
 	
 	private final WebURLFactory factory;
-	private final BasicURLNormalizer normalizer;
 	private final CSSReaderSettings cssReaderSettings;
 	
 	
-	public CssParseData(final WebURLFactory webURLFactory, final BasicURLNormalizer normalizer, boolean haltOnError) {
+	public CssParseData(final WebURLFactory webURLFactory, boolean haltOnError) {
 		this.factory = webURLFactory;
-		this.normalizer = normalizer;
 		this.cssReaderSettings = new CSSReaderSettings().setCSSVersion(ECSSVersion.LATEST);
 		if (haltOnError) {
 			// When parsing fails null is returned by the framework and NullPointerExceptions can arise later on.
@@ -75,11 +73,9 @@ public class CssParseData extends TextParseData {
 	}
 	
 	private Set<WebURL> parseOutgoingUrls(final WebURL referringPage) {
-		
-		final Set<String> seedUrls = extractSeedUrlsFromCss(this.getTextContent(), referringPage);
-		
+		final Set<URI> seedUrls = extractSeedUrlsFromCss(this.getTextContent(), referringPage);
 		final Set<WebURL> outgoingUrls = new HashSet<>();
-		for (final String seedUrl : seedUrls) {
+		for (final URI seedUrl : seedUrls) {
 			final WebURL webURL = factory.newWebUrl();
 			webURL.setURL(seedUrl);
 			outgoingUrls.add(webURL);
@@ -87,7 +83,7 @@ public class CssParseData extends TextParseData {
 		return outgoingUrls;
 	}
 	
-	private Set<String> extractSeedUrlsFromCss(final String input, final WebURL referringPage) {
+	private Set<URI> extractSeedUrlsFromCss(final String input, final WebURL referringPage) {
 		if (input == null || input.isEmpty()) {
 			return new HashSet<>();
 		}
@@ -96,7 +92,7 @@ public class CssParseData extends TextParseData {
 		if (css == null) { // Parsing failed and "haltOnError" is false.
 			return new HashSet<>();
 		}
-		final CssUrlExtractVisitor cssVisitor = new CssUrlExtractVisitor(referringPage.getURL(), normalizer);
+		final CssUrlExtractVisitor cssVisitor = new CssUrlExtractVisitor(referringPage.getURL());
 		
 		CSSVisitor.visitCSSUrl(css, cssVisitor);
 		return cssVisitor.getSeedUrls();

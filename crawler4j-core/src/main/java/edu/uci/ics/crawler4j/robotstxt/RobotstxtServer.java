@@ -98,7 +98,7 @@ public class RobotstxtServer {
         }
 
         try {
-            URL url = new URL(webURL.getURL());
+            URL url = webURL.getURL().toURL();
             String host = getHost(url);
 
             RobotRules rule = cache.get(host);
@@ -126,10 +126,7 @@ public class RobotstxtServer {
     private RobotRules fetchDirectives(URL url) throws InterruptedException, URISyntaxException {
         WebURL robotsTxtUrl = factory.newWebUrl();
         String host = getHost(url);
-        String port = ((url.getPort() == url.getDefaultPort()) || (url.getPort() == -1)) ? "" :
-                (":" + url.getPort());
-        String proto = url.getProtocol();
-        robotsTxtUrl.setURL(proto + "://" + host + port + "/robots.txt");
+        robotsTxtUrl.setURL(url.toURI().resolve("/robots.txt"));
 
         BaseRobotRules directives = null;
         PageFetchResult fetchResult = null;
@@ -159,7 +156,7 @@ public class RobotstxtServer {
                 // https://developers.google.com/search/reference/robots_txt
                 fetchResult.fetchContent(page, 500 * 1024);
                 if (Util.hasPlainTextContent(page.getContentType())) {
-                    directives = ruleParser.parseContent(robotsTxtUrl.getURL(), page.getContentData(),
+                    directives = ruleParser.parseContent(robotsTxtUrl.getURL().toString(), page.getContentData(),
                             "text/plain", config.getUserAgentName());
                 } else {
                     logger.warn(

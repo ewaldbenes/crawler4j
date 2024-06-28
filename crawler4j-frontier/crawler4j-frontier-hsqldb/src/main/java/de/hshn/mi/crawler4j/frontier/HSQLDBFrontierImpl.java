@@ -29,6 +29,7 @@ import edu.uci.ics.crawler4j.url.WebURLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -92,7 +93,7 @@ public class HSQLDBFrontierImpl implements Frontier {
                             "SET status = ?, parenturl = ?, parentid = ?, priority = ?, cdepth = ?, anchor = ? WHERE id = ?")) {
 
                 ps.setString(1, Status.SCHEDULED.name());
-                ps.setString(2, url.getParentUrl());
+                ps.setString(2, url.getParentUrl().toString());
                 ps.setInt(3, url.getParentDocid());
                 ps.setInt(4, url.getPriority());
                 ps.setInt(5, url.getDepth());
@@ -143,10 +144,10 @@ public class HSQLDBFrontierImpl implements Frontier {
 
                                 WebURL webURL = factory.newWebUrl();
 
-                                webURL.setURL(rs.getString("url"));
+                                webURL.setURL(URI.create(rs.getString("url")));
                                 webURL.setDocid(rs.getInt("id"));
                                 webURL.setParentDocid(rs.getInt("parentid"));
-                                webURL.setParentUrl(rs.getString("parenturl"));
+                                webURL.setParentUrl(URI.create(rs.getString("parenturl")));
                                 webURL.setDepth(rs.getShort("cdepth"));
                                 webURL.setPriority(rs.getByte("priority"));
                                 webURL.setAnchor(rs.getString("anchor"));

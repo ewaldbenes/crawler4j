@@ -36,6 +36,7 @@
 package edu.uci.ics.crawler4j.url;
 
 import java.io.IOException;
+import java.net.URI;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -75,7 +76,7 @@ class PublicSuffixTest {
 		webUrl.setTldList(internalTldList);
 		
 		// when:
-		webUrl.setURL(url);
+		webUrl.setURL(URI.create(url));
 		
 		// then:
 		Assertions.assertThat(webUrl.getDomain()).isEqualTo(domain);
@@ -92,7 +93,7 @@ class PublicSuffixTest {
 		webUrl.setTldList(externalTldList);
 		
 		// when:
-		webUrl.setURL(url);
+		webUrl.setURL(URI.create(url));
 		
 		// then:
 		Assertions.assertThat(webUrl.getDomain()).isEqualTo(domain);

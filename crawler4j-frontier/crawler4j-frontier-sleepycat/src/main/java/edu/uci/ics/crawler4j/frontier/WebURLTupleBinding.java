@@ -26,6 +26,8 @@ import com.sleepycat.bind.tuple.TupleOutput;
 import edu.uci.ics.crawler4j.url.WebURL;
 import edu.uci.ics.crawler4j.url.WebURLImpl;
 
+import java.net.URI;
+
 /**
  * @author Yasser Ganjisaffar
  */
@@ -34,10 +36,11 @@ public class WebURLTupleBinding extends TupleBinding<WebURL> {
     @Override
     public WebURL entryToObject(TupleInput input) {
         WebURLImpl webURL = new WebURLImpl();
-        webURL.setURL(input.readString());
+        webURL.setURL(URI.create(input.readString()));
         webURL.setDocid(input.readInt());
         webURL.setParentDocid(input.readInt());
-        webURL.setParentUrl(input.readString());
+        String parentUrlStr = input.readString();
+        webURL.setParentUrl(parentUrlStr != null ? URI.create(parentUrlStr) : null);
         webURL.setDepth(input.readShort());
         webURL.setPriority(input.readByte());
         webURL.setAnchor(input.readString());
@@ -46,10 +49,10 @@ public class WebURLTupleBinding extends TupleBinding<WebURL> {
 
     @Override
     public void objectToEntry(WebURL url, TupleOutput output) {
-        output.writeString(url.getURL());
+        output.writeString(url.getURL().toString());
         output.writeInt(url.getDocid());
         output.writeInt(url.getParentDocid());
-        output.writeString(url.getParentUrl());
+        output.writeString(url.getParentUrl() == null ? null : url.getParentUrl().toString());
         output.writeShort(url.getDepth());
         output.writeByte(url.getPriority());
         output.writeString(url.getAnchor());

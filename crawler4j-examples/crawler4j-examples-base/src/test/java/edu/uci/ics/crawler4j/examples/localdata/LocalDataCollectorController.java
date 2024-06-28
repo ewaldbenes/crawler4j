@@ -22,7 +22,6 @@ package edu.uci.ics.crawler4j.examples.localdata;
 import java.io.File;
 import java.util.List;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.frontier.SleepycatFrontierConfiguration;
@@ -57,12 +56,11 @@ public class LocalDataCollectorController {
         config.setMaxPagesToFetch(10);
         config.setPolitenessDelay(1000);
 
-        BasicURLNormalizer normalizer = BasicURLNormalizer.newBuilder().idnNormalization(BasicURLNormalizer.IdnNormalization.NONE).build();
-        PageFetcher pageFetcher = new PageFetcher(config, normalizer);
+        PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         FrontierConfiguration frontierConfiguration = new SleepycatFrontierConfiguration(config);
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher, new SleepycatWebURLFactory());
-        CrawlController controller = new CrawlController(config, normalizer, pageFetcher, robotstxtServer, frontierConfiguration);
+        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer, frontierConfiguration);
 
         controller.addSeed("https://www.ics.uci.edu/");
         controller.start(LocalDataCollectorCrawler.class, numberOfCrawlers);

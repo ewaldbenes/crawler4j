@@ -19,7 +19,6 @@
  */
 package edu.uci.ics.crawler4j.examples.urlfrontier.basic;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import de.hshn.mi.crawler4j.frontier.URLFrontierConfiguration;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -60,13 +59,12 @@ public class URLFrontierBasicCrawlController {
         config.setHaltOnError(false);
 
         // Instantiate the controller for this crawl.
-        BasicURLNormalizer normalizer = BasicURLNormalizer.newBuilder().idnNormalization(BasicURLNormalizer.IdnNormalization.NONE).build();
-        PageFetcher pageFetcher = new PageFetcher(config, normalizer);
+        PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         robotstxtConfig.setEnabled(false);
         FrontierConfiguration frontierConfiguration = new URLFrontierConfiguration(config, 10, "localhost", 7071);
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher, frontierConfiguration.getWebURLFactory());
-        CrawlController controller = new CrawlController(config, normalizer, pageFetcher, robotstxtServer, frontierConfiguration);
+        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer, frontierConfiguration);
 
         // For each crawl, you need to add some seed urls. These are the first
         // URLs that are fetched and then the crawler starts following links

@@ -22,14 +22,13 @@ package edu.uci.ics.crawler4j.parser;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
-import edu.uci.ics.crawler4j.url.UrlResolver;
 import edu.uci.ics.crawler4j.url.WebURLFactory;
 import org.apache.tika.metadata.DublinCore;
 import org.apache.tika.metadata.Metadata;
@@ -54,12 +53,10 @@ public class TikaHtmlParser implements edu.uci.ics.crawler4j.parser.HtmlParser {
     private final HtmlParser htmlParser;
     private final ParseContext parseContext;
     private final WebURLFactory factory;
-    private final BasicURLNormalizer normalizer;
 
-    public TikaHtmlParser(CrawlConfig config, BasicURLNormalizer normalizer, TLDList tldList, WebURLFactory webURLFactory) {
+    public TikaHtmlParser(CrawlConfig config, TLDList tldList, WebURLFactory webURLFactory) {
         this.config = config;
         this.tldList = tldList;
-        this.normalizer = normalizer;
 
         htmlParser = new HtmlParser();
         parseContext = new ParseContext();
@@ -67,7 +64,7 @@ public class TikaHtmlParser implements edu.uci.ics.crawler4j.parser.HtmlParser {
         this.factory = webURLFactory;
     }
 
-    public HtmlParseData parse(Page page, String contextURL) throws ParseException {
+    public HtmlParseData parse(Page page, URI contextURL) throws ParseException {
         HtmlParseData parsedData = new HtmlParseData();
 
         HtmlContentHandler contentHandler = new HtmlContentHandler();
@@ -109,10 +106,10 @@ public class TikaHtmlParser implements edu.uci.ics.crawler4j.parser.HtmlParser {
 
     }
 
-    private Set<WebURL> getOutgoingUrls(String contextURL, HtmlContentHandler contentHandler) {
+    private Set<WebURL> getOutgoingUrls(URI contextURL, HtmlContentHandler contentHandler) {
         Set<WebURL> outgoingUrls = new HashSet<>();
 
-        String baseURL = contentHandler.getBaseUrl();
+        URI baseURL = contentHandler.getBaseUrl();
         if (baseURL != null) {
             contextURL = baseURL;
         }
@@ -127,13 +124,17 @@ public class TikaHtmlParser implements edu.uci.ics.crawler4j.parser.HtmlParser {
 
             String hrefLoweredCase = href.trim().toLowerCase(Locale.ROOT);
             if (!containsForbiddenRefTag(hrefLoweredCase)) {
-                String url = normalizer.filter(UrlResolver.resolveUrl((contextURL == null) ? "" : contextURL, href));
+                URI url = null;
+                try {
+                    url = contextURL.resolve(href);
+                } catch (Exception e) {
+                    // nothing to do, null check in next line
+                }
                 if (url != null) {
                     WebURL webURL = factory.newWebUrl();
                     webURL.setTldList(tldList);
                     webURL.setURL(url);
                     webURL.setTag(urlAnchorPair.getTag());
-                    webURL.setAnchor(urlAnchorPair.getAnchor());
                     webURL.setAttributes(urlAnchorPair.getAttributes());
                     outgoingUrls.add(webURL);
                     urlCount++;

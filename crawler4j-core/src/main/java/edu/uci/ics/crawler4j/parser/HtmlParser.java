@@ -22,6 +22,8 @@ package edu.uci.ics.crawler4j.parser;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.exceptions.ParseException;
 
+import java.net.URI;
+
 public interface HtmlParser {
 
     default HtmlParseData parse(Page page) throws Exception {
@@ -31,7 +33,7 @@ public interface HtmlParser {
     /**
      * @deprecated implement {@link #parse(Page)}
      */
-    default HtmlParseData parse(Page page, String contextURL) throws ParseException {
+    default HtmlParseData parse(Page page, URI contextURL) throws ParseException {
     	throw new ParseException("At least one of the parse methods of the HtmlParser-interface should be implemented");
     }
 

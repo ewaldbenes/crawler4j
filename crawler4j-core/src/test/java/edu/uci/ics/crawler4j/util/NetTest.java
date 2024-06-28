@@ -35,6 +35,7 @@
 
 package edu.uci.ics.crawler4j.util;
 
+import java.net.URI;
 import java.util.Set;
 
 import org.assertj.core.api.Assertions;
@@ -66,13 +67,13 @@ class NetTest {
     @Test
     void noSchemeSpecified() {
         Set<WebURL> extracted = standard.extractUrls("www.wikipedia.com");
-        Assertions.assertThat(extracted.stream().map(t -> t.getURL())).contains("http://www.wikipedia.com/");
+        Assertions.assertThat(extracted.stream().map(t -> t.getURL())).contains(URI.create("http://www.wikipedia.com/"));
     }
     
     @Test
     void localhost() {
     	Set<WebURL> extracted = allowSingleLevelDomain.extractUrls("http://localhost/page/1");
-    	Assertions.assertThat(extracted.stream().map(t -> t.getURL())).contains("http://localhost/page/1");
+    	Assertions.assertThat(extracted.stream().map(t -> t.getURL())).contains(URI.create("http://localhost/page/1"));
     }
     
     @Test
@@ -84,7 +85,7 @@ class NetTest {
     @Test
     void multipleUrls() {
     	Set<WebURL> extracted = standard.extractUrls(" hey com check out host.com/toodles and http://例子.测试 real soon ");
-    	Assertions.assertThat(extracted.stream().map(t -> t.getURL())).contains("http://host.com/toodles", "http://例子.测试/");
+    	Assertions.assertThat(extracted.stream().map(t -> t.getURL())).contains(URI.create("http://host.com/toodles"), URI.create("http://例子.测试/"));
     }
     
 }

@@ -21,6 +21,7 @@ package edu.uci.ics.crawler4j.crawler;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -96,7 +97,7 @@ public class WebCrawler implements Runnable {
      */
     private Frontier frontier;
 	private UrlFilter urlFilter;
-	private ResourceHandler resourceHandler;
+	private ResourceHandler resourceHandler = page -> {}; // by default do nothing
 
     /**
      * Is the current crawler instance waiting for new URLs? This field is
@@ -127,7 +128,11 @@ public class WebCrawler implements Runnable {
         this.isWaitingForNewURLs = false;
         this.batchReadSize = crawlController.getConfig().getBatchReadSize();
 		UrlFilter orig = this.urlFilter;
-		this.urlFilter = new UrlFilters.ChainedUrlFilter(new UrlFilters.NoFollowUrlFilter(crawlController.getConfig().isRespectNoFollow()), orig);
+		UrlFilters.NoFollowUrlFilter noFollowFilter = new UrlFilters.NoFollowUrlFilter(crawlController.getConfig().isRespectNoFollow());
+		if(orig == null)
+			this.urlFilter = noFollowFilter;
+		else
+			this.urlFilter = new UrlFilters.ChainedUrlFilter(noFollowFilter, orig);
     }
 
     /**
@@ -227,8 +232,8 @@ public class WebCrawler implements Runnable {
      * @param contentType Type of Content
      * @param description Error Description
      */
-    protected void onUnexpectedStatusCode(String urlStr, int statusCode, String contentType,
-                                          String description) {
+    protected void onUnexpectedStatusCode(URI urlStr, int statusCode, String contentType,
+										  String description) {
         logger.warn("Skipping URL: {}, StatusCode: {}, {}, {}", urlStr, statusCode, contentType,
                 description);
         // Do nothing by default (except basic logging)
@@ -267,11 +272,11 @@ public class WebCrawler implements Runnable {
         if (myController.getConfig().isHaltOnError() && !(e instanceof IOException)) {
             throw new RuntimeException("unhandled exception", e);
         } else {
-            String urlStr = (//
+            URI urlStr = (//
             		page == null //
-            		? "NULL" //
+            		? null //
             				: page.getWebURL() == null //
-            				? "NULL" //
+            				? null //
             						: page.getWebURL().getURL()//
             						);
             logger.warn("Unhandled exception while fetching {}: {}", urlStr, e.getMessage());
@@ -503,12 +508,12 @@ public class WebCrawler implements Runnable {
 			WebURL curURL = page.getWebURL();
 			page.setRedirect(true);
 			
-			String movedToUrl = fetchResult.getMovedToUrl();
+			URI movedToUrl = fetchResult.getMovedToUrl();
 			if (movedToUrl == null) {
 				onRedirectedToInvalidUrl(page);
 				return false;
 			}
-			page.setRedirectedToUrl(movedToUrl);
+			page.setRedirectedToUrl(movedToUrl.toString());
 			onRedirectedStatusCode(page);
 			
 			if (myController.getConfig().isFollowRedirects()) {
@@ -524,7 +529,6 @@ public class WebCrawler implements Runnable {
 				webURL.setParentUrl(curURL.getParentUrl());
 				webURL.setDepth(curURL.getDepth());
 				webURL.setDocid(-1);
-				webURL.setAnchor(curURL.getAnchor());
 				if (urlFilter.accept(page, webURL)) {
 					if (!shouldFollowLinksIn(webURL) || robotstxtServer.allows(webURL)) {
 						webURL.setDocid(docIdServer.getNewDocID(movedToUrl));

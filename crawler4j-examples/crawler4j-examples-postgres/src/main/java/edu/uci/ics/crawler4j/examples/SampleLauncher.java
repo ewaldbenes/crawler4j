@@ -19,7 +19,6 @@
  */
 package edu.uci.ics.crawler4j.examples;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
 import edu.uci.ics.crawler4j.frontier.SleepycatFrontierConfiguration;
 import edu.uci.ics.crawler4j.url.SleepycatWebURLFactory;
@@ -36,7 +35,6 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 public class SampleLauncher {
 
@@ -57,12 +55,11 @@ public class SampleLauncher {
          * Instantiate the controller for this crawl.
          */
 
-        BasicURLNormalizer normalizer = BasicURLNormalizer.newBuilder().idnNormalization(BasicURLNormalizer.IdnNormalization.NONE).build();
-        PageFetcher pageFetcher = new PageFetcher(config, normalizer);
+        PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         FrontierConfiguration frontierConfiguration = new SleepycatFrontierConfiguration(config);
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher, new SleepycatWebURLFactory());
-        CrawlController controller = new CrawlController(config, normalizer, pageFetcher, robotstxtServer, frontierConfiguration);
+        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer, frontierConfiguration);
 
         /*
          * For each crawl, you need to add some seed urls. These are the first

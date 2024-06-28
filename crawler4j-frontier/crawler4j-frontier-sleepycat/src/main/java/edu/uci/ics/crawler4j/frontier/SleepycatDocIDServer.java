@@ -32,6 +32,7 @@ import com.sleepycat.je.OperationStatus;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.util.Util;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -72,12 +73,12 @@ public class SleepycatDocIDServer implements DocIDServer{
      * @param url the URL for which the docid is returned.
      * @return the docid of the url if it is seen before. Otherwise -1 is returned.
      */
-    public int getDocId(String url) {
+    public int getDocId(URI url) {
         synchronized (mutex) {
             OperationStatus result;
             DatabaseEntry value = new DatabaseEntry();
             try {
-                DatabaseEntry key = new DatabaseEntry(url.getBytes(StandardCharsets.UTF_8));
+                DatabaseEntry key = new DatabaseEntry(url.toString().getBytes(StandardCharsets.UTF_8));
                 result = docIDsDB.get(null, key, value, null);
 
             } catch (RuntimeException e) {
@@ -97,7 +98,7 @@ public class SleepycatDocIDServer implements DocIDServer{
         }
     }
 
-    public int getNewDocID(String url) {
+    public int getNewDocID(URI url) {
         synchronized (mutex) {
             try {
                 // Make sure that we have not already assigned a docid for this URL
@@ -107,7 +108,7 @@ public class SleepycatDocIDServer implements DocIDServer{
                 }
 
                 ++lastDocID;
-                docIDsDB.put(null, new DatabaseEntry(url.getBytes(StandardCharsets.UTF_8)),
+                docIDsDB.put(null, new DatabaseEntry(url.toString().getBytes(StandardCharsets.UTF_8)),
                              new DatabaseEntry(Util.int2ByteArray(lastDocID)));
                 return lastDocID;
             } catch (RuntimeException e) {
@@ -121,7 +122,7 @@ public class SleepycatDocIDServer implements DocIDServer{
         }
     }
 
-    public void addUrlAndDocId(String url, int docId) {
+    public void addUrlAndDocId(URI url, int docId) {
         synchronized (mutex) {
             if (docId <= lastDocID) {
                 throw new IllegalArgumentException(
@@ -137,13 +138,13 @@ public class SleepycatDocIDServer implements DocIDServer{
                 throw new IllegalArgumentException("Doc id: " + prevDocid + " is already assigned to URL: " + url);
             }
 
-            docIDsDB.put(null, new DatabaseEntry(url.getBytes(StandardCharsets.UTF_8)),
+            docIDsDB.put(null, new DatabaseEntry(url.toString().getBytes(StandardCharsets.UTF_8)),
                          new DatabaseEntry(Util.int2ByteArray(docId)));
             lastDocID = docId;
         }
     }
 
-    public boolean isSeenBefore(String url) {
+    public boolean isSeenBefore(URI url) {
         return getDocId(url) != -1;
     }
 

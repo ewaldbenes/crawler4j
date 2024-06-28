@@ -24,7 +24,6 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
@@ -113,13 +112,12 @@ class BasicAuthTest {
         config.setDnsResolver(inMemDnsResolver);
         config.setAuthInfos(List.of(basicAuthInfo));
 
-        BasicURLNormalizer normalizer = TestUtils.newNormalizer();
-        PageFetcher pageFetcher = new PageFetcher(config, normalizer);
+        PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         robotstxtConfig.setEnabled(false);
         WebURLFactory webURLFactory = new SleepycatWebURLFactory();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher, webURLFactory);
-        CrawlController controller = new CrawlController(config, normalizer, pageFetcher, robotstxtServer, TestUtils.createFrontierConfiguration(config));
+        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer, TestUtils.createFrontierConfiguration(config));
 
         controller.addSeed("http://first.com:" + wm.getPort() + "/");
         controller.addSeed("http://second.com:" + wm.getPort() + "/");

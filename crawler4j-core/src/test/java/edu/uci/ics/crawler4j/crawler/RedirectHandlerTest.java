@@ -22,7 +22,6 @@ package edu.uci.ics.crawler4j.crawler;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
@@ -86,11 +85,10 @@ class RedirectHandlerTest {
                 .withBody(TestUtils.getInputStringFrom("/robotstxt/robots.txt")))
               );
 
-        BasicURLNormalizer normalizer = TestUtils.newNormalizer();
         WebURLFactory webURLFactory = new SleepycatWebURLFactory();
-        PageFetcher pageFetcher = new PageFetcher(config, normalizer);
+        PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtServer robotstxtServer = new RobotstxtServer(new RobotstxtConfig(), pageFetcher, webURLFactory);
-        CrawlController controller = new CrawlController(config, normalizer, pageFetcher, robotstxtServer, TestUtils.createFrontierConfiguration(config));
+        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer, TestUtils.createFrontierConfiguration(config));
         controller.addSeed("http://localhost:" + wm.getPort() + "/some/index.html");
 
         controller.start(HandleRedirectWebCrawler.class, 1);

@@ -20,6 +20,7 @@
 package edu.uci.ics.crawler4j.url;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Map;
 
 public interface WebURL extends Serializable {
@@ -41,9 +42,9 @@ public interface WebURL extends Serializable {
     /**
      * @return Url string
      */
-    String getURL();
+    URI getURL();
 
-    void setURL(String url);
+    void setURL(URI url);
 
     /**
      * @return unique document id of the parent page. The parent page is the
@@ -57,9 +58,9 @@ public interface WebURL extends Serializable {
      * @return url of the parent page. The parent page is the page in which
      * the Url of this page is first observed.
      */
-    String getParentUrl();
+    URI getParentUrl();
 
-    void setParentUrl(String parentUrl);
+    void setParentUrl(URI parentUrl);
 
     /**
      * @return crawl depth at which this Url is first observed. Seed Urls
@@ -96,8 +97,6 @@ public interface WebURL extends Serializable {
      * @return path of this Url. For 'http://www.example.com/sample.htm', registeredDomain will be 'sample.htm'
      */
     String getPath();
-
-    void setPath(String path);
 
     /**
      * @return anchor string. For example, in <a href="example.com">A sample anchor</a>

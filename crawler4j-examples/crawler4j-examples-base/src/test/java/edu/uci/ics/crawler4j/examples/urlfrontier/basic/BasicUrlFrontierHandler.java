@@ -8,6 +8,7 @@ import org.apache.hc.core5.http.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.util.Set;
 
 record BasicUrlFrontierHandler() implements ResourceHandler {
@@ -19,11 +20,11 @@ record BasicUrlFrontierHandler() implements ResourceHandler {
     @Override
     public void visit(Page page) {
         int docid = page.getWebURL().getDocid();
-        String url = page.getWebURL().getURL();
+        URI url = page.getWebURL().getURL();
         String domain = page.getWebURL().getDomain();
         String path = page.getWebURL().getPath();
         String subDomain = page.getWebURL().getSubDomain();
-        String parentUrl = page.getWebURL().getParentUrl();
+        URI parentUrl = page.getWebURL().getParentUrl();
         String anchor = page.getWebURL().getAnchor();
 
         LOG.debug("Docid: {}", docid);

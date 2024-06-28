@@ -20,6 +20,7 @@
 package edu.uci.ics.crawler4j.tests.parser;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.hc.core5.http.ContentType;
@@ -41,9 +42,9 @@ public class HtmlParserTest {
 	void canParseHtmlPageTest() {
 		WebURLFactory webURLFactory = Crawler4jTestUtils.newWebURLFactory();
 		HtmlParser parser = new TikaHtmlParser(//
-				new CrawlConfig(), Crawler4jTestUtils.newNormalizer(), Crawler4jTestUtils.newTLDList(), webURLFactory);
+				new CrawlConfig(), Crawler4jTestUtils.newTLDList(), webURLFactory);
 		WebURL url = webURLFactory.newWebUrl();
-		url.setURL("http://wiki.c2.com/");
+		url.setURL(URI.create("http://wiki.c2.com/"));
 		File file = new File("src/test/resources/html/wiki.c2.com.html");
 		ContentType contentType = ContentType.create("text/html", StandardCharsets.UTF_8);
 		FileEntity entity = new FileEntity(file, contentType);

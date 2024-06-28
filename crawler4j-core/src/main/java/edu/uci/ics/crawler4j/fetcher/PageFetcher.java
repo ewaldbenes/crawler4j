@@ -20,6 +20,7 @@
 package edu.uci.ics.crawler4j.fetcher;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -56,7 +57,6 @@ import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.PolitenessServer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.authentication.AuthInfo;
@@ -64,7 +64,6 @@ import edu.uci.ics.crawler4j.crawler.authentication.CredentialsProvider;
 import edu.uci.ics.crawler4j.crawler.authentication.FormAuthInfo;
 import edu.uci.ics.crawler4j.crawler.exceptions.PageBiggerThanMaxSizeException;
 import edu.uci.ics.crawler4j.fetcher.politeness.CachedPolitenessServer;
-import edu.uci.ics.crawler4j.url.UrlResolver;
 import edu.uci.ics.crawler4j.url.WebURL;
 
 /**
@@ -73,19 +72,17 @@ import edu.uci.ics.crawler4j.url.WebURL;
 public class PageFetcher {
     protected static final Logger logger = LoggerFactory.getLogger(PageFetcher.class);
     protected CrawlConfig config;
-    protected BasicURLNormalizer normalizer;
     protected PolitenessServer politenessServer;
     protected PoolingHttpClientConnectionManager connectionManager;
     protected CloseableHttpClient httpClient;
     protected IdleConnectionMonitorThread connectionMonitorThread = null;
 
-    public PageFetcher(CrawlConfig config, BasicURLNormalizer normalizer) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        this(config, normalizer, new CachedPolitenessServer(config));
+    public PageFetcher(CrawlConfig config) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        this(config, new CachedPolitenessServer(config));
     }
 
-    public PageFetcher(CrawlConfig config, BasicURLNormalizer normalizer, PolitenessServer politenessServer) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+    public PageFetcher(CrawlConfig config, PolitenessServer politenessServer) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         this.config = config;
-        this.normalizer = normalizer;
         this.politenessServer = politenessServer;
 
         RequestConfig requestConfig = RequestConfig.custom()
@@ -180,10 +177,10 @@ public class PageFetcher {
             throws InterruptedException, IOException, PageBiggerThanMaxSizeException, URISyntaxException {
         // Getting URL, setting headers & content
         PageFetchResult fetchResult = new PageFetchResult(config.isHaltOnError());
-        String toFetchURL = webUrl.getURL();
+        URI toFetchURL = webUrl.getURL();
         HttpUriRequest request = null;
         try {
-            request = newHttpUriRequest(toFetchURL);
+            request = newHttpUriRequest(toFetchURL.toString());
 
             final long politenessDelay = politenessServer.applyPoliteness(webUrl);
             if (politenessDelay != CachedPolitenessServer.NO_POLITENESS_APPLIED) {
@@ -208,14 +205,14 @@ public class PageFetcher {
 
                 Header header = response.getFirstHeader(HttpHeaders.LOCATION);
                 if (header != null) {
-                    String movedToUrl = normalizer.filter(UrlResolver.resolveUrl(toFetchURL, header.getValue()));
-                    fetchResult.setMovedToUrl(movedToUrl);
+                    URI movedUrl = toFetchURL.resolve(header.getValue()).normalize();
+                    fetchResult.setMovedToUrl(movedUrl);
                 }
             } else if (statusCode >= 200 && statusCode <= 299) { // is 2XX, everything looks ok
                 fetchResult.setFetchedUrl(toFetchURL);
-                String uri = request.getUri().toString();
+                URI uri = request.getUri();
                 if (!uri.equals(toFetchURL)) {
-                    if (!normalizer.filter(uri).equals(toFetchURL)) {
+                    if (!uri.normalize().equals(toFetchURL)) {
                         fetchResult.setFetchedUrl(uri);
                     }
                 }

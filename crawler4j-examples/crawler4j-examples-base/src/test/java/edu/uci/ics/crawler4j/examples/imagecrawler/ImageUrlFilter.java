@@ -17,7 +17,7 @@ record ImageUrlFilter(List<String> allowedDomains) implements UrlFilter {
 
     @Override
     public boolean accept(Page referringPage, WebURL url) {
-        String href = url.getURL().toLowerCase(Locale.ROOT);
+        String href = url.getURL().toString();
         if (filters.matcher(href).matches()) {
             return false;
         }

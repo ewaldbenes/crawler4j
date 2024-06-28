@@ -97,7 +97,7 @@ public class LocalDataCollectorCrawler extends WebCrawler {
 
         @Override
         public boolean accept(Page referringPage, WebURL url) {
-            String href = url.getURL().toLowerCase(Locale.ROOT);
+            String href = url.getURL().toString();
             return !FILTERS.matcher(href).matches() && href.startsWith("https://www.ics.uci.edu/");
         }
     }

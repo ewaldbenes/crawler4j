@@ -18,7 +18,7 @@ final class BasicWikipediaFilter implements UrlFilter {
 
     @Override
     public boolean accept(Page referringPage, WebURL url) {
-        String href = url.getURL().toLowerCase(Locale.ROOT);
+        String href = url.getURL().toString();
         // Ignore the url if it has an extension that matches our defined set of image extensions.
         if (IMAGE_EXTENSIONS.matcher(href).matches()) {
             numSeenImages.incrementAndGet();

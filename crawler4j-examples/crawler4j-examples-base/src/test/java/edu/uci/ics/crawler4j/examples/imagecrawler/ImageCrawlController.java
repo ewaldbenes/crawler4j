@@ -22,7 +22,6 @@ package edu.uci.ics.crawler4j.examples.imagecrawler;
 import java.io.File;
 import java.util.List;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
@@ -59,12 +58,11 @@ public class ImageCrawlController {
 
         List<String> crawlDomains = List.of("https://uci.edu/");
 
-        BasicURLNormalizer normalizer = BasicURLNormalizer.newBuilder().idnNormalization(BasicURLNormalizer.IdnNormalization.NONE).build();
-        PageFetcher pageFetcher = new PageFetcher(config, normalizer);
+        PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         FrontierConfiguration frontierConfiguration = new SleepycatFrontierConfiguration(config);
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher, new SleepycatWebURLFactory());
-        CrawlController controller = new CrawlController(config, normalizer, pageFetcher, robotstxtServer, frontierConfiguration);
+        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer, frontierConfiguration);
         for (String domain : crawlDomains) {
             controller.addSeed(domain);
         }

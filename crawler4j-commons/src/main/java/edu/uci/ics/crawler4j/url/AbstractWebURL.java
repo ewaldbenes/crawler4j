@@ -19,15 +19,16 @@
  */
 package edu.uci.ics.crawler4j.url;
 
+import java.net.URI;
 import java.util.Map;
 
 public abstract class AbstractWebURL implements WebURL {
 
-    private String url;
+    private URI url;
 
     private int docid;
     private int parentDocid;
-    private String parentUrl;
+    private URI parentUrl;
     private short depth;
     private String registeredDomain;
     private String subDomain;
@@ -61,20 +62,17 @@ public abstract class AbstractWebURL implements WebURL {
     /**
      * @return Url string
      */
-    public String getURL() {
+    public URI getURL() {
         return url;
     }
 
-    public void setURL(String url) {
+    public void setURL(URI url) {
         this.url = url;
 
-        int domainStartIdx = url.indexOf("//") + 2;
-        int domainEndIdx = url.indexOf('/', domainStartIdx);
-        domainEndIdx = (domainEndIdx > domainStartIdx) ? domainEndIdx : url.length();
-        String domain = url.substring(domainStartIdx, domainEndIdx);
+        String domain = url.getHost();
         registeredDomain = domain;
         subDomain = "";
-        if (tldList != null && !(domain.isEmpty())) {
+        if (tldList != null) {
             String candidate = null;
             String rd = null;
             StringBuilder sd = null;
@@ -104,11 +102,6 @@ public abstract class AbstractWebURL implements WebURL {
                 subDomain = sd.toString();
             }
         }
-        path = url.substring(domainEndIdx);
-        int pathEndIdx = path.indexOf('?');
-        if (pathEndIdx >= 0) {
-            path = path.substring(0, pathEndIdx);
-        }
     }
 
     /**
@@ -129,11 +122,11 @@ public abstract class AbstractWebURL implements WebURL {
      *      url of the parent page. The parent page is the page in which
      *      the Url of this page is first observed.
      */
-    public String getParentUrl() {
+    public URI getParentUrl() {
         return parentUrl;
     }
 
-    public void setParentUrl(String parentUrl) {
+    public void setParentUrl(URI parentUrl) {
         this.parentUrl = parentUrl;
     }
 
@@ -181,7 +174,7 @@ public abstract class AbstractWebURL implements WebURL {
      *      path of this Url. For 'http://www.example.com/sample.htm', registeredDomain will be 'sample.htm'
      */
     public String getPath() {
-        return path;
+        return url.getPath();
     }
 
     public void setPath(String path) {
@@ -194,7 +187,7 @@ public abstract class AbstractWebURL implements WebURL {
      *      the anchor string is 'A sample anchor'
      */
     public String getAnchor() {
-        return anchor;
+        return url.getFragment();
     }
 
     public void setAnchor(String anchor) {
@@ -259,6 +252,6 @@ public abstract class AbstractWebURL implements WebURL {
 
     @Override
     public String toString() {
-        return url;
+        return url.toString();
     }
 }

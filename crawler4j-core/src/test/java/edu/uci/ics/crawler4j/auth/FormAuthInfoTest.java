@@ -23,7 +23,6 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
@@ -103,13 +102,12 @@ class FormAuthInfoTest {
         c.setCookieStore(new BasicCookieStore());
         // c.setCookiePolicy(CookiepSpecs.DEFAULT)
 
-        BasicURLNormalizer normalizer = TestUtils.newNormalizer();
-				PageFetcher pageFetcher = new PageFetcher(c, normalizer);
+        PageFetcher pageFetcher = new PageFetcher(c);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         robotstxtConfig.setEnabled(false);
         WebURLFactory webURLFactory = new SleepycatWebURLFactory();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher, webURLFactory);
-        CrawlController controller = new CrawlController(c, normalizer, pageFetcher, robotstxtServer, TestUtils.createFrontierConfiguration(c));
+        CrawlController controller = new CrawlController(c, pageFetcher, robotstxtServer, TestUtils.createFrontierConfiguration(c));
 
         controller.addSeed("http://localhost:" + wm.getPort() + "/");
         controller.start(WebCrawler.class, 1);

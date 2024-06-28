@@ -22,7 +22,6 @@ package edu.uci.ics.crawler4j.config;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
-import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
@@ -75,13 +74,12 @@ class CustomDnsResolverTest {
         config.setPolitenessDelay(1000);
         config.setDnsResolver(inMemDnsResolver);
 
-        BasicURLNormalizer normalizer = TestUtils.newNormalizer();
-        PageFetcher pageFetcher = new PageFetcher(config, normalizer);
+        PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         robotstxtConfig.setEnabled(false);
         WebURLFactory webURLFactory = new SleepycatWebURLFactory();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher, webURLFactory);
-        CrawlController controller = new CrawlController(config, normalizer, pageFetcher, robotstxtServer, TestUtils.createFrontierConfiguration(config));
+        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer, TestUtils.createFrontierConfiguration(config));
 
         controller.addSeed("http://googhle.com:" + wm.getPort() + "/some/index.html");
         controller.start(WebCrawler.class, 1);

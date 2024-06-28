@@ -19,6 +19,7 @@
  */
 package edu.uci.ics.crawler4j.examples.shutdown;
 
+import java.net.URI;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -49,7 +50,7 @@ public class BasicCrawler extends WebCrawler {
         @Override
         public void visit(Page page) {
             int docid = page.getWebURL().getDocid();
-            String url = page.getWebURL().getURL();
+            URI url = page.getWebURL().getURL();
             int parentDocid = page.getWebURL().getParentDocid();
 
             logger.debug("Docid: {}", docid);
@@ -79,7 +80,7 @@ public class BasicCrawler extends WebCrawler {
         private static final String DOMAIN = "https://www.ics.uci.edu/";
         @Override
         public boolean accept(Page referringPage, WebURL url) {
-            String href = url.getURL().toLowerCase(Locale.ROOT);
+            String href = url.getURL().toString();
             return !FILTERS.matcher(href).matches() && href.startsWith(DOMAIN);
         }
     }

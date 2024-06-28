@@ -21,6 +21,7 @@ package edu.uci.ics.crawler4j.tests.parser;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.net.URI;
 import java.util.Set;
 
 import org.assertj.core.api.Assertions;
@@ -43,8 +44,8 @@ public class CssParseDataTest {
 				// This was previously the result, but is wrong
 //				, "http://www.test.com/path/to/'leaves-medium%20(1920x1280"//
 				// This is what should be the result
-				, "http://www.test.com/path/to/leaves-medium%20(1920x1280).jpg"//
-				, "http://www.test.com/images/other-wallpaper.png"//
+				, URI.create("http://www.test.com/path/to/leaves-medium%20(1920x1280).jpg")//
+				, URI.create("http://www.test.com/images/other-wallpaper.png")//
 		);
 	}
 	
@@ -85,7 +86,7 @@ public class CssParseDataTest {
 		// This was previously the result, but is wrong
 //				, "http://www.test.com/s/sanchez/v13/Ycm0sZJORluHnXbIfmxh_zQA.woff2"//
 		// This is what should be the result
-				, "https://fonts.gstatic.com/s/sanchez/v13/Ycm0sZJORluHnXbIfmxh_zQA.woff2"//
+				, URI.create("https://fonts.gstatic.com/s/sanchez/v13/Ycm0sZJORluHnXbIfmxh_zQA.woff2")//
 		);
 	}
 	
@@ -93,12 +94,12 @@ public class CssParseDataTest {
 	void extractRelativeUrlFromCssTest() {
 		final String cssText = TestUtils.getInputStringFrom("/css/fonts-relative.css");
 		assertUrlsFound(cssText//
-				, "http://www.test.com/path/s/sanchez/v13/Ycm0sZJORluHnXbIfmxh_zQA.woff2"//
+				, URI.create("http://www.test.com/path/s/sanchez/v13/Ycm0sZJORluHnXbIfmxh_zQA.woff2")//
 		);
 	}
 	
 	private void assertNoURLsFoundInCSS(final String cssText) {
-		final WebURL webURL = Crawler4jTestUtils.newWebURL("http://www.test.com/path/to/bootstrap.min.css");
+		final WebURL webURL = Crawler4jTestUtils.newWebURL(URI.create("http://www.test.com/path/to/bootstrap.min.css"));
 		
 		final CssParseData cssParseData = Crawler4jTestUtils.newCssParseData();
 		cssParseData.setTextContent(cssText);
@@ -112,8 +113,8 @@ public class CssParseDataTest {
 		Assertions.assertThat(outgoingUrls).isEmpty();
 	}
 	
-	private void assertUrlsFound(final String cssText, final String... urls) {
-		final WebURL webURL = Crawler4jTestUtils.newWebURL("http://www.test.com/path/to/bootstrap.min.css");
+	private void assertUrlsFound(final String cssText, final URI... urls) {
+		final WebURL webURL = Crawler4jTestUtils.newWebURL(URI.create("http://www.test.com/path/to/bootstrap.min.css"));
 		
 		final CssParseData cssParseData = Crawler4jTestUtils.newCssParseData();
 		cssParseData.setTextContent(cssText);
@@ -132,7 +133,7 @@ public class CssParseDataTest {
 	void cSSUrlsParsingQuotes() {
 		CssParseData parseData = Crawler4jTestUtils.newCssParseData();
 		parseData.setTextContent(TestUtils.getInputStringFrom("/css/quotes.css"));
-		WebURL webUrl = Crawler4jTestUtils.newWebURL("http://example.com/css.css");
+		WebURL webUrl = Crawler4jTestUtils.newWebURL(URI.create("http://example.com/css.css"));
 		
 		try {
 			parseData.parseAndSetOutgoingUrls(new Page(webUrl));
@@ -149,7 +150,7 @@ public class CssParseDataTest {
 		CssParseData parseData = Crawler4jTestUtils.newCssParseData();
 		parseData.setTextContent(TestUtils.getInputStringFrom("/css/absolute.css"));
 		// This use case is rather simple. A css file can contain absolute urls to resources that reside on a different host.
-		WebURL webUrl = Crawler4jTestUtils.newWebURL("http://example.com/css.css");
+		WebURL webUrl = Crawler4jTestUtils.newWebURL(URI.create("http://example.com/css.css"));
 		
 		try {
 			parseData.parseAndSetOutgoingUrls(new Page(webUrl));
@@ -160,9 +161,9 @@ public class CssParseDataTest {
 		
 		Assertions.assertThat(urls).hasSize(3);
 		Assertions.assertThat(urls).map(t -> t.getURL()).isSubsetOf(//
-				"http://example.com/css/absolute_no_proto.png"//
-				, "http://example.com/css/absolute_path.png"//
-				, "http://example.com/css/absolute_with_domain.png"//
+				URI.create("http://example.com/css/absolute_no_proto.png")//
+				, URI.create("http://example.com/css/absolute_path.png")//
+				, URI.create("http://example.com/css/absolute_with_domain.png")//
 		);
 	}
 	
@@ -170,7 +171,7 @@ public class CssParseDataTest {
 	void cSSRelativeUrlsPaths() {
 		CssParseData parseData = Crawler4jTestUtils.newCssParseData();
 		parseData.setTextContent(TestUtils.getInputStringFrom("/css/relative.css"));
-		WebURL webUrl = Crawler4jTestUtils.newWebURL("http://example.com/asset/css/css.css");
+		WebURL webUrl = Crawler4jTestUtils.newWebURL(URI.create("http://example.com/asset/css/css.css"));
 		
 		try {
 			parseData.parseAndSetOutgoingUrls(new Page(webUrl));
@@ -181,8 +182,8 @@ public class CssParseDataTest {
 		
 		Assertions.assertThat(urls).hasSize(2);
 		Assertions.assertThat(urls).map(t -> t.getURL()).isSubsetOf(//
-				"http://example.com/asset/images/backgound_one.jpg"//
-				, "http://example.com/backgound_two.jpg"//
+				URI.create("http://example.com/asset/images/backgound_one.jpg")//
+				, URI.create("http://example.com/backgound_two.jpg")//
 		);
 	}
 	
@@ -191,7 +192,7 @@ public class CssParseDataTest {
 		Assertions.assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
 			final String cssTextInput = TestUtils.getInputStringFrom("/css/non-parsable.css");
 			
-			final WebURL webURL = Crawler4jTestUtils.newWebURL("http://www.test.com/path/to/some.css");
+			final WebURL webURL = Crawler4jTestUtils.newWebURL(URI.create("http://www.test.com/path/to/some.css"));
 			
 			final boolean haltOnError = true;
 			final CssParseData cssParseData = Crawler4jTestUtils.newCssParseData(haltOnError);
@@ -204,7 +205,7 @@ public class CssParseDataTest {
 	void nonParsableCssHaltingOnErrorFalseTest() throws Exception {
 		final String cssTextInput = TestUtils.getInputStringFrom("/css/non-parsable.css");
 		
-		final WebURL webURL = Crawler4jTestUtils.newWebURL("http://www.test.com/path/to/some.css");
+		final WebURL webURL = Crawler4jTestUtils.newWebURL(URI.create("http://www.test.com/path/to/some.css"));
 		
 		final boolean haltOnError = false;
 		final CssParseData cssParseData = Crawler4jTestUtils.newCssParseData(haltOnError);

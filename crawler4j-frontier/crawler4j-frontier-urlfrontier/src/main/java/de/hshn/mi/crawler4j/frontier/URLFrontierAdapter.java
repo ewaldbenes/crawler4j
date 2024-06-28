@@ -32,6 +32,7 @@ import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +145,7 @@ public class URLFrontierAdapter implements Frontier, DocIDServer {
             final Urlfrontier.URLItem.Builder builder = Urlfrontier.URLItem.newBuilder();
             final Map<String, Urlfrontier.StringList> metadata = createMetadata(url);
             final Urlfrontier.URLInfo info = Urlfrontier.URLInfo.newBuilder()
-                    .setUrl(url.getURL())
+                    .setUrl(url.getURL().toString())
                     .putAllMetadata(metadata)
                     .build();
             builder.setDiscovered(Urlfrontier.DiscoveredURLItem.newBuilder().setInfo(info).build());
@@ -159,7 +160,7 @@ public class URLFrontierAdapter implements Frontier, DocIDServer {
         final Map<String, Urlfrontier.StringList> metadata = new HashMap<>();
 
         if (url.getParentUrl() != null) {
-            metadata.put("parent", Urlfrontier.StringList.newBuilder().addValues(url.getParentUrl()).build());
+            metadata.put("parent", Urlfrontier.StringList.newBuilder().addValues(url.getParentUrl().toString()).build());
         }
 
         metadata.put("parentdocid", Urlfrontier.StringList.newBuilder().addValues(String.valueOf(url.getParentDocid())).build());
@@ -276,24 +277,24 @@ public class URLFrontierAdapter implements Frontier, DocIDServer {
     }
 
     @Override
-    public int getDocId(String url) {
+    public int getDocId(URI url) {
         logger.debug("URL Frontier does not know the concept of doc ids - so we do not care either");
         return -1;
     }
 
     @Override
-    public int getNewDocID(String url) {
+    public int getNewDocID(URI url) {
         logger.debug("URL Frontier does not know the concept of doc ids - so we do not care either");
         return -1;
     }
 
     @Override
-    public void addUrlAndDocId(String url, int docId) {
+    public void addUrlAndDocId(URI url, int docId) {
         logger.debug("URL Frontier does not know the concept of doc ids - so we do not care either");
     }
 
     @Override
-    public boolean isSeenBefore(String url) {
+    public boolean isSeenBefore(URI url) {
         //handled by URL Frontier
         return false;
     }

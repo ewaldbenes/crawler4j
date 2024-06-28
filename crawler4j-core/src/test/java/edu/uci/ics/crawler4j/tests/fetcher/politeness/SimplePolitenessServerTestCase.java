@@ -29,6 +29,8 @@ import edu.uci.ics.crawler4j.fetcher.politeness.SimplePolitenessServer;
 import edu.uci.ics.crawler4j.test.SimpleWebURL;
 import edu.uci.ics.crawler4j.url.WebURL;
 
+import java.net.URI;
+
 public class SimplePolitenessServerTestCase {
 
     private edu.uci.ics.crawler4j.PolitenessServer simplePolitenessServer;
@@ -45,7 +47,7 @@ public class SimplePolitenessServerTestCase {
     public void testApplyPoliteness1() {
 
         WebURL webUrl = new SimpleWebURL();
-        webUrl.setURL("https://github.com/yasserg/crawler4j");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j"));
 
         long politenessDelay = simplePolitenessServer.applyPoliteness(webUrl);
 
@@ -63,13 +65,13 @@ public class SimplePolitenessServerTestCase {
     public void testApplyPoliteness2() {
 
         WebURL webUrl = new SimpleWebURL();
-        webUrl.setURL("https://github.com/yasserg/crawler4j");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j"));
 
         long politenessDelay = simplePolitenessServer.applyPoliteness(webUrl);
 
         Assertions.assertThat(politenessDelay).isEqualTo(CachedPolitenessServer.NO_POLITENESS_APPLIED);
 
-        webUrl.setURL("https://github.com/yasserg/crawler4j/blob/master/pom.xml");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j/blob/master/pom.xml"));
 
         politenessDelay = simplePolitenessServer.applyPoliteness(webUrl);
 
@@ -90,13 +92,13 @@ public class SimplePolitenessServerTestCase {
     public void testApplyPoliteness3() {
 
         WebURL webUrl = new SimpleWebURL();
-        webUrl.setURL("https://github.com/yasserg/crawler4j");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j"));
 
         long politenessDelay = simplePolitenessServer.applyPoliteness(webUrl);
 
         Assertions.assertThat(politenessDelay).isEqualTo(CachedPolitenessServer.NO_POLITENESS_APPLIED);
 
-        webUrl.setURL("http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html");
+        webUrl.setURL(URI.create("http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentLinkedQueue.html"));
 
         politenessDelay = simplePolitenessServer.applyPoliteness(webUrl);
 
@@ -104,7 +106,7 @@ public class SimplePolitenessServerTestCase {
         		Long.valueOf(config.getPolitenessDelay() - 10)//
         		, Long.valueOf(config.getPolitenessDelay()));
 
-        webUrl.setURL("https://github.com/yasserg/crawler4j/blob/master/pom.xml");
+        webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j/blob/master/pom.xml"));
 
         politenessDelay = simplePolitenessServer.applyPoliteness(webUrl);
 

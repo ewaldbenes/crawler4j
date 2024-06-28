@@ -21,6 +21,7 @@ package edu.uci.ics.crawler4j.fetcher;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
@@ -41,8 +42,8 @@ public class PageFetchResult implements AutoCloseable {
     protected int statusCode;
     protected HttpEntity entity = null;
     protected Header[] responseHeaders = null;
-    protected String fetchedUrl = null;
-    protected String movedToUrl = null;
+    protected URI fetchedUrl = null;
+    protected URI movedToUrl = null;
 
     public PageFetchResult(boolean haltOnError) {
         this.haltOnError = haltOnError;
@@ -72,11 +73,11 @@ public class PageFetchResult implements AutoCloseable {
         this.responseHeaders = responseHeaders;
     }
 
-    public String getFetchedUrl() {
+    public URI getFetchedUrl() {
         return fetchedUrl;
     }
 
-    public void setFetchedUrl(String fetchedUrl) {
+    public void setFetchedUrl(URI fetchedUrl) {
         this.fetchedUrl = fetchedUrl;
     }
 
@@ -122,11 +123,11 @@ public class PageFetchResult implements AutoCloseable {
         }
     }
 
-    public String getMovedToUrl() {
+    public URI getMovedToUrl() {
         return movedToUrl;
     }
 
-    public void setMovedToUrl(String movedToUrl) {
+    public void setMovedToUrl(URI movedToUrl) {
         this.movedToUrl = movedToUrl;
     }
 }
