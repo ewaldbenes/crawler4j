@@ -69,8 +69,9 @@ public class ImageCrawlController {
             controller.addSeed(domain);
         }
 
-        CrawlController.WebCrawlerFactory<WebCrawler> factory = () -> new ImageCrawler(storageFolder)
-                .setUrlFilter(new ImageCrawler.ImageUrlFilter(crawlDomains));
+        CrawlController.WebCrawlerFactory<WebCrawler> factory = () -> new WebCrawler()
+                .setUrlFilter(new ImageUrlFilter(crawlDomains))
+                .setResourceHandler(new FileStoreHandler(storageFolder));
         controller.start(factory, numberOfCrawlers);
     }
 }

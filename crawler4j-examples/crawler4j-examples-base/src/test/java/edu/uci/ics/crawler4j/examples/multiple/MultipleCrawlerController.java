@@ -91,10 +91,12 @@ public class MultipleCrawlerController {
 
         UrlFilters.RegexPattern regexPatternFilter = new UrlFilters.RegexPattern(Pattern.compile(
                 ".*(\\.(css|js|bmp|gif|jpe?g|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|pdf|rm|smil|wmv|swf|wma|zip|rar|gz))$"));
-        CrawlController.WebCrawlerFactory<WebCrawler> factory1 = () -> new BasicCrawler()
-                .setUrlFilter(new UrlFilters.ChainedUrlFilter(regexPatternFilter, new UrlFilters.UrlStartsWithFromList(crawler1Domains)));
-        CrawlController.WebCrawlerFactory<WebCrawler> factory2 = () -> new BasicCrawler()
-                .setUrlFilter(new UrlFilters.ChainedUrlFilter(regexPatternFilter, new UrlFilters.UrlStartsWithFromList(crawler2Domains)));;
+        CrawlController.WebCrawlerFactory<WebCrawler> factory1 = () -> new WebCrawler()
+                .setUrlFilter(new UrlFilters.ChainedUrlFilter(regexPatternFilter, new UrlFilters.UrlStartsWithFromList(crawler1Domains)))
+                .setResourceHandler(new BasicHandler());
+        CrawlController.WebCrawlerFactory<WebCrawler> factory2 = () -> new WebCrawler()
+                .setUrlFilter(new UrlFilters.ChainedUrlFilter(regexPatternFilter, new UrlFilters.UrlStartsWithFromList(crawler2Domains)))
+                .setResourceHandler(new BasicHandler());
 
         // The first crawler will have 5 concurrent threads and the second crawler will have 7 threads.
         controller1.startNonBlocking(factory1, 5);

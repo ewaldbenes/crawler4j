@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import edu.uci.ics.crawler4j.crawler.ResourceHandler;
 import edu.uci.ics.crawler4j.crawler.filter.UrlFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,27 +37,30 @@ import edu.uci.ics.crawler4j.url.WebURL;
 public class LocalDataCollectorCrawler extends WebCrawler {
     private static final Logger logger = LoggerFactory.getLogger(LocalDataCollectorCrawler.class);
 
-    CrawlStat myCrawlStat;
+    private final CrawlStat myCrawlStat;
 
     public LocalDataCollectorCrawler() {
         myCrawlStat = new CrawlStat();
         setUrlFilter(new Filter());
+        setResourceHandler(new Handler());
     }
 
-    @Override
-    public void visit(Page page) {
-        logger.info("Visited: {}", page.getWebURL().getURL());
-        myCrawlStat.incProcessedPages();
+    final class Handler implements ResourceHandler {
+        @Override
+        public void visit(Page page) {
+            logger.info("Visited: {}", page.getWebURL().getURL());
+            myCrawlStat.incProcessedPages();
 
-        if (page.getParseData() instanceof HtmlParseData) {
-            HtmlParseData parseData = (HtmlParseData) page.getParseData();
-            Set<WebURL> links = parseData.getOutgoingUrls();
-            myCrawlStat.incTotalLinks(links.size());
-            myCrawlStat.incTotalTextSize(parseData.getText().getBytes(StandardCharsets.UTF_8).length);
-        }
-        // We dump this crawler statistics after processing every 50 pages
-        if ((myCrawlStat.getTotalProcessedPages() % 50) == 0) {
-            dumpMyData();
+            if (page.getParseData() instanceof HtmlParseData) {
+                HtmlParseData parseData = (HtmlParseData) page.getParseData();
+                Set<WebURL> links = parseData.getOutgoingUrls();
+                myCrawlStat.incTotalLinks(links.size());
+                myCrawlStat.incTotalTextSize(parseData.getText().getBytes(StandardCharsets.UTF_8).length);
+            }
+            // We dump this crawler statistics after processing every 50 pages
+            if ((myCrawlStat.getTotalProcessedPages() % 50) == 0) {
+                dumpMyData();
+            }
         }
     }
 

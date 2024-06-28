@@ -96,6 +96,7 @@ public class WebCrawler implements Runnable {
      */
     private Frontier frontier;
 	private UrlFilter urlFilter;
+	private ResourceHandler resourceHandler;
 
     /**
      * Is the current crawler instance waiting for new URLs? This field is
@@ -109,7 +110,7 @@ public class WebCrawler implements Runnable {
 
     private int batchReadSize;
 
-    /**
+	/**
      * Initializes the current instance of the crawler
      *
      * @param id              the id of this crawler instance
@@ -357,18 +358,7 @@ public class WebCrawler implements Runnable {
         return true;
     }
 
-    /**
-     * Classes that extends WebCrawler should overwrite this function to process
-     * the content of the fetched and parsed page.
-     *
-     * @param page the page object that is just fetched and parsed.
-     */
-    public void visit(Page page) {
-        // Do nothing by default
-        // Sub-classed should override this to add their custom functionality
-    }
-
-		/**
+	/**
 		 * @param curURL not null
 		 * @return true if processed correctly, false otherwise
 		 */
@@ -462,7 +452,7 @@ public class WebCrawler implements Runnable {
 			
 			boolean noIndex = myController.getConfig().isRespectNoIndex() && hasMetaRobotsNoindex(page);
 			if (!noIndex) {
-				visit(page);
+				resourceHandler.visit(page);
 			}
 			return true;
 		}
@@ -571,6 +561,11 @@ public class WebCrawler implements Runnable {
 
 	public WebCrawler setUrlFilter(UrlFilter filter) {
 		this.urlFilter = filter;
+		return this;
+	}
+
+	public WebCrawler setResourceHandler(ResourceHandler handler) {
+			this.resourceHandler = handler;
 		return this;
 	}
 }

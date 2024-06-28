@@ -109,16 +109,21 @@ class NoIndexTest {
     
 class NoIndexWebCrawler extends WebCrawler {
 
-	private Map<String, Page> visitedPages;
+	private Map<String, Page> visitedPages = new HashMap<>();
+
+    NoIndexWebCrawler() {
+        setResourceHandler(new Handler(visitedPages));
+    }
 	
 	public void init(int id, CrawlController crawlController) {
 		super.init(id, crawlController);
-		visitedPages = new HashMap<>();
 	}
 
-	public void visit(Page page) {
-		visitedPages.put(page.getWebURL().toString(), page);
-	}
+    record Handler(Map<String, Page> visitedPages) implements ResourceHandler {
+        public void visit(Page page) {
+            visitedPages.put(page.getWebURL().toString(), page);
+        }
+    }
 	
 	public Object getMyLocalData() {
 		return visitedPages;

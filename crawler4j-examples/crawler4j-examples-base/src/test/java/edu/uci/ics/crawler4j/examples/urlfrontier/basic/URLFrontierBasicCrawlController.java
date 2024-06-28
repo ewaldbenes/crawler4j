@@ -23,6 +23,7 @@ import crawlercommons.filters.basic.BasicURLNormalizer;
 import de.hshn.mi.crawler4j.frontier.URLFrontierConfiguration;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.examples.Files;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.frontier.FrontierConfiguration;
@@ -79,7 +80,8 @@ public class URLFrontierBasicCrawlController {
         int numberOfCrawlers = 2;
 
         // The factory which creates instances of crawlers.
-        CrawlController.WebCrawlerFactory<BasicUrlFrontierCrawler> factory = BasicUrlFrontierCrawler::new;
+        CrawlController.WebCrawlerFactory<WebCrawler> factory =
+                () -> new WebCrawler().setResourceHandler(new BasicUrlFrontierHandler());
 
         // Start the crawl. This is a blocking operation, meaning that your code
         // will reach the line after this only when crawling is finished.

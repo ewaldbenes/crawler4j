@@ -101,7 +101,9 @@ public class BasicCrawlController {
         AtomicInteger numSeenImages = new AtomicInteger();
 
         // The factory which creates instances of crawlers.
-        CrawlController.WebCrawlerFactory<WebCrawler> factory = () -> new BasicCrawler().setUrlFilter(new BasicCrawler.BasicUrlFilter(numSeenImages));
+        CrawlController.WebCrawlerFactory<WebCrawler> factory = () -> new WebCrawler()
+                .setUrlFilter(new BasicUrlFilter(numSeenImages))
+                .setResourceHandler(new BasicHandler());
 
         // Start the crawl. This is a blocking operation, meaning that your code
         // will reach the line after this only when crawling is finished.

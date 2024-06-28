@@ -22,6 +22,7 @@ package edu.uci.ics.crawler4j.examples.statushandler;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import edu.uci.ics.crawler4j.crawler.ResourceHandler;
 import edu.uci.ics.crawler4j.crawler.filter.UrlFilter;
 import org.apache.hc.core5.http.HttpStatus;
 import org.slf4j.Logger;
@@ -39,15 +40,7 @@ public class StatusHandlerCrawler extends WebCrawler {
 
     public StatusHandlerCrawler() {
         setUrlFilter(new Filter());
-    }
-
-    /**
-     * This function is called when a page is fetched and ready
-     * to be processed by your program.
-     */
-    @Override
-    public void visit(Page page) {
-        // Do nothing
+        setResourceHandler(page -> {});
     }
 
     @Override

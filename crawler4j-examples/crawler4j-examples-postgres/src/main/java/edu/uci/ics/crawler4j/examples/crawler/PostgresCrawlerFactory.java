@@ -34,6 +34,9 @@ public class PostgresCrawlerFactory implements CrawlController.WebCrawlerFactory
     }
 
     public WebCrawler newInstance() throws Exception {
-        return new PostgresWebCrawler(new PostgresDBServiceImpl(comboPooledDataSource)).setUrlFilter(new PostgresWebCrawler.Filter());
+        PostgresDBServiceImpl postgresDBService = new PostgresDBServiceImpl(comboPooledDataSource);
+        return new PostgresWebCrawler(postgresDBService)
+                .setUrlFilter(new PostgresWebCrawler.Filter())
+                .setResourceHandler(new PostgresWebCrawler.Handler(postgresDBService));
     }
 }

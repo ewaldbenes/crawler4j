@@ -101,8 +101,9 @@ public class HSQLDBBasicCrawlController {
         AtomicInteger numSeenImages = new AtomicInteger();
 
         // The factory which creates instances of crawlers.
-        CrawlController.WebCrawlerFactory<WebCrawler> factory = () -> new BasicWikipediaCrawler()
-                .setUrlFilter(new BasicWikipediaCrawler.Filter(numSeenImages));
+        CrawlController.WebCrawlerFactory<WebCrawler> factory = () -> new WebCrawler()
+                .setUrlFilter(new BasicWikipediaFilter(numSeenImages))
+                .setResourceHandler(new BasicWikipediaHandler());
 
         // Start the crawl. This is a blocking operation, meaning that your code
         // will reach the line after this only when crawling is finished.
