@@ -27,8 +27,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.helger.css.decl.CSSDeclaration;
 import com.helger.css.decl.CSSExpressionMemberTermURI;
 import com.helger.css.decl.CSSImportRule;
@@ -71,7 +69,7 @@ public class CssUrlExtractVisitor extends DefaultCSSUrlVisitor {
 	 * @return the added seed url or empty
 	 */
 	protected Optional<String> addSeedUrl(final String url) {
-		if (StringUtils.isBlank(url) || url.startsWith("data:")) {
+		if (url == null || url.isBlank() || url.startsWith("data:")) {
 			return Optional.empty();
 		}
 		

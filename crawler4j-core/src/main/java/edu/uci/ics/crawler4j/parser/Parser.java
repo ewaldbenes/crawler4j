@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.lang3.Validate;
-
 import crawlercommons.filters.basic.BasicURLNormalizer;
 import edu.uci.ics.crawler4j.Constants;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
@@ -79,8 +77,9 @@ public class Parser {
             }
 
             String html = parseData.getHtml();
-            Validate.validState(html != null//
-                    , "BinaryParseData.parseBinaryContentAndSetHtml(...) should initialize the html value");
+            if(html == null)
+                throw new IllegalStateException("BinaryParseData.parseBinaryContentAndSetHtml(...) should initialize the html value");
+
             parseData.setOutgoingUrls(net.extractUrls(html));
             page.setParseData(parseData);
 

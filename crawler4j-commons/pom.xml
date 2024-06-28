@@ -17,17 +17,6 @@
             <groupId>com.github.crawler-commons</groupId>
             <artifactId>crawler-commons</artifactId>
             <version>${crawler-commons.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-io</groupId>
-                    <artifactId>commons-io</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
@@ -76,18 +65,18 @@
             <version>${slf4j.version}</version>
         </dependency>
         
-					<!-- Test dependencies -->
-					<dependency>
-						<groupId>org.junit.jupiter</groupId>
-						<artifactId>junit-jupiter</artifactId>
-						<version>${junit.version}</version>
-						<scope>test</scope>
-					</dependency>
-					<dependency>
-						<groupId>org.assertj</groupId>
-						<artifactId>assertj-core</artifactId>
-						<version>${assertj.version}</version>
-						<scope>test</scope>
-					</dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
