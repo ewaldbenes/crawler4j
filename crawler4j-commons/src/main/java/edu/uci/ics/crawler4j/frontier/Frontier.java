@@ -29,7 +29,7 @@ public interface Frontier {
 
     void schedule(WebURL url);
 
-    void getNextURLs(int max, List<WebURL> result);
+    List<WebURL> loadNextURLs(int max);
 
     void setProcessed(WebURL webURL);
 

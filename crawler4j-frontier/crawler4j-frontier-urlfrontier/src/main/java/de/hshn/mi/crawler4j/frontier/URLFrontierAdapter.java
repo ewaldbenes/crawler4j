@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,17 +185,18 @@ public class URLFrontierAdapter implements Frontier, DocIDServer {
     }
 
     @Override
-    public void getNextURLs(int max, List<WebURL> result) {
+    public List<WebURL> loadNextURLs(int max) {
         final Urlfrontier.GetParams.Builder request =
                 Urlfrontier.GetParams.newBuilder()
                         .setMaxUrlsPerQueue(max / maxQueues)
                         .setDelayRequestable(crawlConfig.getPolitenessDelay())
                         .setMaxQueues(maxQueues);
 
+        ArrayList<WebURL> urls = new ArrayList<>(max);
         blockingStub.getURLs(request.build())
                 .forEachRemaining(
-                        info -> result.add(new URLFrontierWebURLImpl(info)));
-
+                        info -> urls.add(new URLFrontierWebURLImpl(info)));
+        return urls;
     }
 
     @Override

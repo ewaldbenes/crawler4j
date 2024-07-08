@@ -19,6 +19,7 @@
  */
 package edu.uci.ics.crawler4j.frontier;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -126,11 +127,12 @@ public class SleepycatFrontierImpl implements Frontier {
         }
     }
 
-    public void getNextURLs(int max, List<WebURL> result) {
+    public List<WebURL> loadNextURLs(int max) {
+        ArrayList<WebURL> urls = new ArrayList<>(max);
         while (true) {
             synchronized (mutex) {
                 if (isFinished) {
-                    return;
+                    return urls;
                 }
                 try {
                     List<WebURL> curResults = workQueues.get(max);
@@ -140,13 +142,13 @@ public class SleepycatFrontierImpl implements Frontier {
                             inProcessPages.put(curPage);
                         }
                     }
-                    result.addAll(curResults);
+                    urls.addAll(curResults);
                 } catch (DatabaseException e) {
                     logger.error("Error while getting next urls", e);
                 }
 
-                if (result.size() > 0) {
-                    return;
+                if (urls.size() > 0) {
+                    return urls;
                 }
             }
 
@@ -158,7 +160,7 @@ public class SleepycatFrontierImpl implements Frontier {
                 // Do nothing
             }
             if (isFinished) {
-                return;
+                return urls;
             }
         }
     }

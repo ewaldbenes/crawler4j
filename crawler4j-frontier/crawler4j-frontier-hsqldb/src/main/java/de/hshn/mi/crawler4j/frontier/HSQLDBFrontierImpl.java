@@ -124,11 +124,12 @@ public class HSQLDBFrontierImpl implements Frontier {
     }
 
     @Override
-    public void getNextURLs(int max, List<WebURL> result) {
+    public List<WebURL> loadNextURLs(int max) {
+        ArrayList<WebURL> urls = new ArrayList<>(max);
         while (true) {
             synchronized (mutex) {
                 if (isFinished) {
-                    return;
+                    return urls;
                 }
 
                 List<WebURL> curResults = new ArrayList<>();
@@ -161,7 +162,7 @@ public class HSQLDBFrontierImpl implements Frontier {
                     logger.error(e.getLocalizedMessage(), e);
                 }
 
-                result.addAll(curResults);
+                urls.addAll(curResults);
                 for (WebURL curPage : curResults) {
                     try (Connection c = ds.getConnection()) {
 
@@ -177,8 +178,8 @@ public class HSQLDBFrontierImpl implements Frontier {
 
                 }
 
-                if (result.size() > 0) {
-                    return;
+                if (urls.size() > 0) {
+                    return urls;
                 }
             }
 
@@ -190,7 +191,7 @@ public class HSQLDBFrontierImpl implements Frontier {
                 // Do nothing
             }
             if (isFinished) {
-                return;
+                return urls;
             }
 
         }
