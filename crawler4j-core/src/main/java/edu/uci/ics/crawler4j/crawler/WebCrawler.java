@@ -487,7 +487,7 @@ public class WebCrawler implements Runnable {
 								logger.debug("Not visiting: {} as per the server's \"robots.txt\" " + "policy", webURL.getURL());
 							}
 						} else {
-							logger.debug("Not visiting: {} as per your \"shouldVisit\" policy", webURL.getURL());
+							logger.debug("Not visiting: {} as per your URL filter policy", webURL.getURL());
 						}
 					}
 				}
@@ -536,7 +536,7 @@ public class WebCrawler implements Runnable {
 						logger.debug("Not visiting: {} as per the server's \"robots.txt\" policy", webURL.getURL());
 					}
 				} else {
-					logger.debug("Not visiting: {} as per your \"shouldVisit\" policy", webURL.getURL());
+					logger.debug("Not visiting: {} as per your URL filter policy", webURL.getURL());
 				}
 			}
 			return true;
