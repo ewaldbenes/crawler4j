@@ -25,11 +25,11 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Set;
 
+import edu.uci.ics.crawler4j.url.AbstractWebURLFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
-import edu.uci.ics.crawler4j.test.SimpleWebURLFactory;
 import edu.uci.ics.crawler4j.url.TLDList;
 import edu.uci.ics.crawler4j.url.WebURL;
 
@@ -66,7 +66,7 @@ public class NetTest {
 			final CrawlConfig config = new CrawlConfig();
 			config.setAllowSingleLevelDomain(allowSingleLevelDomain);
 			final TLDList tldList = new TLDList(config);
-			final SimpleWebURLFactory factory = new SimpleWebURLFactory();
+			final AbstractWebURLFactory factory = new AbstractWebURLFactory();
 			final Net net = new Net(config, tldList, factory);
 			return net;
 		} catch (final IOException e) {

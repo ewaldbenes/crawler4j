@@ -25,20 +25,18 @@ import java.net.URI;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.parser.CssParseData;
-import edu.uci.ics.crawler4j.url.TLDList;
-import edu.uci.ics.crawler4j.url.WebURL;
-import edu.uci.ics.crawler4j.url.WebURLFactory;
+import edu.uci.ics.crawler4j.url.*;
 
 public final class Crawler4jTestUtils {
 	private Crawler4jTestUtils() {
 	}
 
 	public static WebURLFactory newWebURLFactory() {
-		return new SimpleWebURLFactory();
+		return new AbstractWebURLFactory();
 	}
 	
 	public static WebURL newWebURL(URI url) {
-		final WebURL result = new SimpleWebURL();
+		final WebURL result = new AbstractWebURL();
 		result.setTldList(newTLDList());
 		result.setURL(url);
 		return result;

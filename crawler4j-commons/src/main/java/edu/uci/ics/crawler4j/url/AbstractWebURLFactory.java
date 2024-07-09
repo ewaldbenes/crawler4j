@@ -1,8 +1,8 @@
 /*-
  * #%L
- * de.hs-heilbronn.mi:crawler4j-core
+ * de.hs-heilbronn.mi:crawler4j-frontier-hsqldb
  * %%
- * Copyright (C) 2010 - 2022 crawler4j-fork (pre-fork: Yasser Ganjisaffar)
+ * Copyright (C) 2010 - 2021 crawler4j-fork (pre-fork: Yasser Ganjisaffar)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package edu.uci.ics.crawler4j.test;
+package edu.uci.ics.crawler4j.url;
 
-import edu.uci.ics.crawler4j.url.AbstractWebURL;
-
-public class SimpleWebURL extends AbstractWebURL {
-	
-	private static final long serialVersionUID = 1L;
+public class AbstractWebURLFactory implements WebURLFactory {
+    @Override
+    public WebURL newWebUrl() {
+        return new AbstractWebURL();
+    }
 }

@@ -22,7 +22,7 @@ package de.hshn.mi.crawler4j.frontier;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.hshn.mi.crawler4j.exception.HSQLDBFetchException;
-import de.hshn.mi.crawler4j.url.HSQLDBWebURLFactory;
+import edu.uci.ics.crawler4j.url.AbstractWebURLFactory;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.frontier.DocIDServer;
 import edu.uci.ics.crawler4j.frontier.Frontier;
@@ -121,7 +121,7 @@ public class HSQLDBFrontierConfiguration implements FrontierConfiguration {
 
     @Override
     public WebURLFactory getWebURLFactory() {
-        return new HSQLDBWebURLFactory();
+        return new AbstractWebURLFactory();
     }
 
     @Override

@@ -22,7 +22,7 @@ package edu.uci.ics.crawler4j.url;
 import java.net.URI;
 import java.util.Map;
 
-public abstract class AbstractWebURL implements WebURL {
+public class AbstractWebURL implements WebURL {
 
     private URI url;
 

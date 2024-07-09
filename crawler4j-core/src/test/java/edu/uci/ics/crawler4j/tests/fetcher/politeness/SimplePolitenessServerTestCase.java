@@ -19,6 +19,7 @@
  */
 package edu.uci.ics.crawler4j.tests.fetcher.politeness;
 
+import edu.uci.ics.crawler4j.url.AbstractWebURL;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.fetcher.politeness.CachedPolitenessServer;
 import edu.uci.ics.crawler4j.fetcher.politeness.SimplePolitenessServer;
-import edu.uci.ics.crawler4j.test.SimpleWebURL;
 import edu.uci.ics.crawler4j.url.WebURL;
 
 import java.net.URI;
@@ -46,7 +46,7 @@ public class SimplePolitenessServerTestCase {
     @Test
     public void testApplyPoliteness1() {
 
-        WebURL webUrl = new SimpleWebURL();
+        WebURL webUrl = new AbstractWebURL();
         webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j"));
 
         long politenessDelay = simplePolitenessServer.applyPoliteness(webUrl);
@@ -64,7 +64,7 @@ public class SimplePolitenessServerTestCase {
     @Test
     public void testApplyPoliteness2() {
 
-        WebURL webUrl = new SimpleWebURL();
+        WebURL webUrl = new AbstractWebURL();
         webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j"));
 
         long politenessDelay = simplePolitenessServer.applyPoliteness(webUrl);
@@ -91,7 +91,7 @@ public class SimplePolitenessServerTestCase {
     @Test
     public void testApplyPoliteness3() {
 
-        WebURL webUrl = new SimpleWebURL();
+        WebURL webUrl = new AbstractWebURL();
         webUrl.setURL(URI.create("https://github.com/yasserg/crawler4j"));
 
         long politenessDelay = simplePolitenessServer.applyPoliteness(webUrl);

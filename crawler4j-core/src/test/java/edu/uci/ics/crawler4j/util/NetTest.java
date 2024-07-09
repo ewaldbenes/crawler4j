@@ -38,12 +38,12 @@ package edu.uci.ics.crawler4j.util;
 import java.net.URI;
 import java.util.Set;
 
+import edu.uci.ics.crawler4j.url.AbstractWebURLFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import edu.uci.ics.crawler4j.crawler.*;
-import edu.uci.ics.crawler4j.test.SimpleWebURLFactory;
 import edu.uci.ics.crawler4j.url.WebURL;
 
 /**
@@ -58,10 +58,10 @@ class NetTest {
     
     @BeforeAll
     public static void setup() {
-    	standard = new Net(new CrawlConfig(), null, new SimpleWebURLFactory());
+    	standard = new Net(new CrawlConfig(), null, new AbstractWebURLFactory());
     	CrawlConfig c = new CrawlConfig();
     	c.setAllowSingleLevelDomain(true);
-    	allowSingleLevelDomain = new Net(c, null, new SimpleWebURLFactory());
+    	allowSingleLevelDomain = new Net(c, null, new AbstractWebURLFactory());
     }
     		
     @Test
