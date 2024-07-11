@@ -37,13 +37,12 @@ public class WebURLImpl implements WebURL {
     @PrimaryKey
     private String url;
     private URI url2;
+    private Domain domain;
 
     private int docid;
     private int parentDocid;
     private URI parentUrl;
     private short depth;
-    private String registeredDomain;
-    private String subDomain;
     private String path;
     private String anchor;
     private byte priority;
@@ -81,39 +80,8 @@ public class WebURLImpl implements WebURL {
     public void setURL(URI url) {
         this.url = url.toString();
         this.url2 = url;
-
-        registeredDomain = url.getHost();
-        subDomain = "";
-        if (tldList != null && !(url.getHost().isEmpty())) {
-            String candidate = null;
-            String rd = null;
-            StringBuilder sd = null;
-            String[] parts = url.getHost().split("\\.");
-            for (int i = parts.length - 1; i >= 0; i--) {
-                if (rd == null) {
-                    if (candidate == null) {
-                        candidate = parts[i];
-                    } else {
-                        candidate = parts[i] + "." + candidate;
-                    }
-                    if (tldList.isRegisteredDomain(candidate)) {
-                        rd = candidate;
-                    }
-                } else {
-                    if (sd == null) {
-                        sd = new StringBuilder(parts[i]);
-                    } else {
-                        sd.insert(0, parts[i] + ".");
-                    }
-                }
-            }
-            if (rd != null) {
-                registeredDomain = rd;
-            }
-            if (sd != null) {
-                subDomain = sd.toString();
-            }
-        }
+        if(tldList != null)
+            domain = Domain.fromUrlAndDomainList(url, tldList);
     }
 
     /**
@@ -167,7 +135,8 @@ public class WebURLImpl implements WebURL {
      *         'http://www.my.company.co.uk' the domain is 'company.co.uk'.
      */
     public String getDomain() {
-        return registeredDomain;
+        if(domain == null) return url2.getHost();
+        return domain.topLevelDomain();
     }
 
     /**
@@ -178,7 +147,8 @@ public class WebURLImpl implements WebURL {
      * "http://www.my.company.co.uk" the subdomain would be "www.my".
      */
     public String getSubDomain() {
-        return subDomain;
+        if(domain == null) return "";
+        return domain.subDomain();
     }
 
     /**
